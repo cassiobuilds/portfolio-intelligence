@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Intelligence — Wealthsimple</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f5f0; --surface:#ffffff; --surface2:#f9f9f6;
+  --border:#e8e8e2; --border-mid:#d4d4cc;
+  --text:#1a1a1a; --text-muted:#6b6b6b; --text-dim:#a0a09a;
+  --ws-green:#00c37a; --ws-green-lt:#e6f9f2; --ws-green-dk:#009960;
+  --red:#e53e3e; --red-lt:#fff5f5;
+  --amber:#d97706; --amber-lt:#fffbeb;
+  --blue:#2b6cb0; --pos:#00875a; --neg:#e53e3e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;overflow:hidden;}
+
+/* NAV */
+.nav{display:flex;align-items:center;height:52px;padding:0 28px;background:var(--surface);border-bottom:1px solid var(--border);position:fixed;top:0;left:0;right:0;z-index:200;gap:0;}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);letter-spacing:-1px;margin-right:36px;}
+.nav-links{display:flex;gap:4px;list-style:none;}
+.nav-links li a{padding:6px 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--text-muted);text-decoration:none;transition:all .15s;}
+.nav-links li a:hover{background:var(--bg);color:var(--text);}
+.nav-badge{background:var(--ws-green);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;letter-spacing:.04em;vertical-align:middle;margin-left:4px;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.market-pill{display:flex;align-items:center;gap:5px;background:var(--ws-green-lt);border:1px solid rgba(0,195,122,.25);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--ws-green-dk);font-weight:500;}
+.market-dot{width:6px;height:6px;border-radius:50%;background:var(--ws-green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.nav-date{font-size:12px;color:var(--text-dim);font-family:'DM Mono',monospace;}
+
+/* APP SHELL */
+.app{display:grid;grid-template-columns:1fr 360px;height:calc(100vh - 52px);margin-top:52px;overflow:hidden;}
+
+/* MAIN */
+.main{overflow-y:auto;padding:28px 32px;background:var(--bg);}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;background:var(--surface);border-left:1px solid var(--border);overflow:hidden;min-height:0;}
+
+/* PAGE HEADER */
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;}
+.page-title{font-family:'DM Serif Display',serif;font-size:28px;letter-spacing:-.5px;line-height:1.1;}
+.page-sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
+.portfolio-total{text-align:right;}
+.total-val{font-family:'DM Mono',monospace;font-size:26px;letter-spacing:-.5px;}
+.total-lbl{font-size:11px;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
+.total-ret{font-size:13px;color:var(--pos);margin-top:3px;font-weight:500;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:22px;}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.tab.active{color:var(--text);border-bottom-color:var(--ws-green);}
+.tab:hover{color:var(--text);}
+
+/* EXPOSURE CARDS */
+.exp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+.exp-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;border-top:3px solid var(--border);transition:box-shadow .2s;}
+.exp-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.exp-card.warn{border-top-color:var(--red);}
+.exp-card.caution{border-top-color:var(--amber);}
+.exp-card.good{border-top-color:var(--ws-green);}
+.exp-sector{font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:6px;letter-spacing:.02em;}
+.exp-pct{font-family:'DM Mono',monospace;font-size:24px;line-height:1;}
+.exp-pct.warn{color:var(--red);}
+.exp-pct.caution{color:var(--amber);}
+.exp-pct.good{color:var(--ws-green-dk);}
+.exp-val{font-size:11px;color:var(--text-dim);margin-top:3px;font-family:'DM Mono',monospace;}
+.mini-bar{height:3px;background:var(--bg);border-radius:2px;margin-top:10px;overflow:hidden;}
+.mini-fill{height:100%;border-radius:2px;}
+
+/* SECTION LABEL */
+.sec-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;}
+
+/* BREAKDOWN */
+.breakdown{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:22px;}
+.s-row{display:grid;grid-template-columns:150px 1fr 60px 80px;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);}
+.s-row:last-child{border-bottom:none;}
+.s-name{font-size:13px;font-weight:500;}
+.s-bar-wrap{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.s-bar{height:100%;border-radius:3px;}
+.s-pct{font-family:'DM Mono',monospace;font-size:12px;text-align:right;}
+.s-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-align:right;}
+
+/* HOLDINGS TABLE */
+.h-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.th-head{display:grid;grid-template-columns:220px 1fr 80px 110px 80px;padding:10px 18px;border-bottom:1px solid var(--border);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);font-weight:600;background:var(--surface2);}
+.th-row{display:grid;grid-template-columns:220px 1fr 80px 110px 80px;padding:12px 18px;border-bottom:1px solid var(--border);align-items:center;transition:background .12s;cursor:pointer;}
+.th-row:last-child{border-bottom:none;}
+.th-row:hover{background:var(--surface2);}
+.tk-wrap{display:flex;align-items:center;gap:10px;}
+.tk-icon{width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text-muted);font-family:'DM Mono',monospace;flex-shrink:0;}
+.t-name{font-size:13px;font-weight:600;}
+.t-full{font-size:10px;color:var(--text-muted);margin-top:1px;}
+.stag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:500;}
+.tag-energy{background:#fff7ed;color:#c05621;}
+.tag-finance{background:#ebf4ff;color:#2b6cb0;}
+.tag-tech{background:#f0fff4;color:#276749;}
+.tag-consumer{background:#faf5ff;color:#6b46c1;}
+.tag-materials{background:#fffaf0;color:#c05621;}
+.tag-broad{background:#f7fafc;color:#4a5568;}
+.tag-em{background:#faf5ff;color:#553c9a;}
+.tag-intl{background:#fff5f7;color:#97266d;}
+.tag-gold{background:#fffff0;color:#975a16;}
+.tag-nuclear{background:#e6fffa;color:#234e52;}
+.col-ret{font-size:12px;font-family:'DM Mono',monospace;}
+.col-ret.pos{color:var(--pos);}
+.col-ret.neg{color:var(--neg);}
+.col-val{font-size:12px;font-family:'DM Mono',monospace;}
+.col-wt{font-size:12px;font-family:'DM Mono',monospace;color:var(--text-muted);}
+
+/* DCA WIZARD */
+.dca-steps{display:flex;align-items:center;margin-bottom:22px;}
+.snode{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.scirc{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border-mid);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:'DM Mono',monospace;color:var(--text-dim);transition:all .25s;}
+.snode.active .scirc{background:var(--ws-green);border-color:var(--ws-green);color:#fff;font-weight:700;}
+.snode.done .scirc{background:var(--ws-green-lt);border-color:var(--ws-green);color:var(--ws-green-dk);}
+.slbl{font-size:10px;color:var(--text-dim);white-space:nowrap;letter-spacing:.04em;}
+.snode.active .slbl{color:var(--text-muted);}
+.snode.done .slbl{color:var(--ws-green-dk);}
+.sline{flex:1;height:1.5px;background:var(--border);margin:0 8px 14px;transition:background .3s;}
+.sline.done{background:var(--ws-green);}
+
+.dca-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;}
+.dca-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:6px;}
+.dca-desc{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:20px;}
+
+.chips-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.s-chip{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer;transition:all .15s;user-select:none;}
+.s-chip:hover{border-color:var(--border-mid);background:var(--surface2);}
+.s-chip.sel{border-color:var(--ws-green);background:var(--ws-green-lt);}
+.chip-cb{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .15s;}
+.s-chip.sel .chip-cb{background:var(--ws-green);border-color:var(--ws-green);color:#fff;}
+.chip-body{flex:1;}
+.chip-name{font-size:12px;font-weight:600;}
+.chip-now{font-size:11px;font-family:'DM Mono',monospace;margin-top:2px;}
+.chip-tix{font-size:10px;color:var(--text-dim);margin-top:2px;}
+
+.sl-row{padding:14px 0;border-bottom:1px solid var(--border);}
+.sl-row:last-child{border-bottom:none;}
+.sl-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.sl-name{font-size:13px;font-weight:600;}
+.sl-vals{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:12px;}
+.sl-curr{color:var(--text-muted);}
+.sl-arr{color:var(--text-dim);}
+.sl-tgt{color:var(--ws-green-dk);font-weight:600;}
+.track-w{position:relative;padding-top:16px;margin-bottom:4px;}
+.now-line{position:absolute;top:0;bottom:0;width:1.5px;background:var(--border-mid);pointer-events:none;z-index:2;}
+.now-lbl{position:absolute;top:0;font-size:9px;color:var(--text-dim);font-family:'DM Mono',monospace;transform:translateX(-50%);white-space:nowrap;}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ws-green);border:2px solid #fff;box-shadow:0 0 0 1.5px var(--ws-green);cursor:pointer;transition:transform .1s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+.sl-tix{font-size:10px;color:var(--text-dim);margin-top:4px;}
+
+.total-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-top:16px;font-family:'DM Mono',monospace;font-size:13px;transition:all .2s;}
+.total-row.ok{border-color:var(--ws-green);background:var(--ws-green-lt);}
+.total-row.over{border-color:var(--red);background:var(--red-lt);}
+.total-row.under{border-color:var(--amber);background:var(--amber-lt);}
+
+.dca-input-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.dca-lbl{font-size:12px;color:var(--text-muted);min-width:140px;}
+.dca-inp{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:14px;font-family:'DM Mono',monospace;color:var(--text);width:130px;outline:none;transition:border-color .2s;}
+.dca-inp:focus{border-color:var(--ws-green);}
+
+.res-hd{display:grid;grid-template-columns:1fr 90px 90px 60px;padding:9px 14px;background:var(--surface2);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);font-weight:600;border-bottom:1px solid var(--border);}
+.res-row{display:grid;grid-template-columns:1fr 90px 90px 60px;padding:11px 14px;border-bottom:1px solid var(--border);align-items:center;}
+.res-row:last-child{border-bottom:none;}
+.res-sec{font-size:13px;font-weight:600;}
+.res-rep{font-size:10px;color:var(--text-dim);font-family:'DM Mono',monospace;margin-top:2px;}
+.res-gap{font-family:'DM Mono',monospace;font-size:11px;text-align:right;}
+.res-gap.under{color:var(--pos);}
+.res-gap.over{color:var(--neg);}
+.res-gap.flat{color:var(--text-dim);}
+.res-amt{font-family:'DM Mono',monospace;text-align:right;font-size:12px;}
+.res-amt.invest{color:var(--pos);font-weight:600;}
+.res-amt.pause{color:var(--text-dim);}
+.res-pct{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-align:right;}
+.months-bar{margin-top:10px;padding:10px 14px;background:var(--ws-green-lt);border-radius:8px;font-size:12px;color:var(--ws-green-dk);font-family:'DM Mono',monospace;text-align:center;}
+.human-box{display:flex;align-items:flex-start;gap:10px;background:var(--amber-lt);border:1px solid rgba(217,119,6,.25);border-radius:8px;padding:12px 14px;margin-top:14px;font-size:12px;color:var(--amber);line-height:1.5;}
+.hico{flex-shrink:0;font-size:15px;margin-top:1px;}
+
+.btn-p{background:var(--ws-green);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-p:hover:not(:disabled){background:var(--ws-green-dk);}
+.btn-p:disabled{opacity:.35;cursor:not-allowed;}
+.btn-g{background:transparent;color:var(--text-muted);border:1.5px solid var(--border-mid);border-radius:8px;padding:10px 16px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-g:hover{border-color:var(--text-muted);color:var(--text);}
+.btn-row{display:flex;justify-content:space-between;margin-top:16px;}
+
+/* AI SIDEBAR */
+.ai-head{padding:16px 18px 12px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.ai-title-row{display:flex;align-items:center;gap:7px;}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--ws-green);animation:pulse 2s infinite;}
+.ai-title{font-size:14px;font-weight:600;}
+.ai-sub{font-size:11px;color:var(--text-muted);margin-top:3px;}
+
+.chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--surface2);min-height:0;}
+
+.msg{animation:fu .25s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.msg-lbl{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;}
+.msg-user .msg-lbl{text-align:right;}
+.bbl-ai{background:var(--surface);border:1px solid var(--border);border-radius:4px 10px 10px 10px;padding:11px 13px;font-size:12.5px;line-height:1.6;}
+.bbl-user{background:var(--ws-green);border-radius:10px 10px 4px 10px;padding:9px 13px;font-size:12.5px;line-height:1.5;color:#fff;margin-left:auto;max-width:88%;}
+
+.itag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;margin:3px 3px 3px 0;}
+.itag-r{background:var(--red-lt);color:var(--red);border:1px solid rgba(229,62,62,.2);}
+.itag-a{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(217,119,6,.2);}
+.itag-g{background:var(--ws-green-lt);color:var(--ws-green-dk);border:1px solid rgba(0,195,122,.2);}
+
+.rb-prev{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px;font-size:12px;}
+.rb-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.rb-row:last-child{border-bottom:none;}
+.rb-t{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;}
+.rb-a{font-size:10px;color:var(--text-muted);margin-top:1px;}
+.rb-v{font-family:'DM Mono',monospace;font-size:11px;}
+.rb-v.buy{color:var(--pos);}
+.rb-v.hold{color:var(--text-dim);}
+.hbox-sm{display:flex;align-items:flex-start;gap:8px;background:var(--amber-lt);border:1px solid rgba(217,119,6,.2);border-radius:8px;padding:9px 11px;margin-top:9px;font-size:11px;color:var(--amber);line-height:1.5;}
+
+.qchips{display:flex;flex-direction:column;gap:5px;}
+.qchip{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-muted);cursor:pointer;transition:all .15s;text-align:left;width:100%;}
+.qchip:hover{border-color:var(--ws-green);color:var(--text);background:var(--ws-green-lt);}
+.qchip-ic{font-size:13px;flex-shrink:0;}
+
+.typing{display:flex;gap:4px;padding:3px 0;}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--border-mid);animation:blink 1.2s ease infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,60%,100%{opacity:.3;transform:scale(.8)}30%{opacity:1;transform:scale(1)}}
+
+.cin-area{padding:10px 14px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.cin-row{display:flex;gap:8px;align-items:flex-end;}
+.cin{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:9px 13px;font-size:12.5px;font-family:'Inter',sans-serif;color:var(--text);resize:none;outline:none;min-height:38px;max-height:90px;line-height:1.4;transition:border-color .2s;}
+.cin:focus{border-color:var(--ws-green);}
+.cin::placeholder{color:var(--text-dim);}
+.send{width:36px;height:36px;border-radius:8px;background:var(--ws-green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.send:hover{background:var(--ws-green-dk);transform:scale(1.05);}
+.send svg{width:15px;height:15px;fill:#fff;}
+.discl{font-size:10px;color:var(--text-dim);text-align:center;padding:5px 14px 8px;line-height:1.4;background:var(--surface);}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border-mid);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">W</div>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li><li><a href="#">Household</a></li>
+    <li><a href="#">Move</a></li><li><a href="#">Activity</a></li>
+    <li><a href="#">Tax</a></li><li><a href="#">Mortgage</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="nav-date">Fri Feb 27</span>
+    <div class="market-pill"><div class="market-dot"></div>Markets open</div>
+  </div>
+</nav>
+
+<div class="app">
+
+  <!-- MAIN PANEL -->
+  <div class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Portfolio Intelligence</div>
+        <div class="page-sub">TFSA · Cassio · 24 positions</div>
+      </div>
+      <div class="portfolio-total">
+        <div class="total-val">$22,631</div>
+        <div class="total-lbl">Total Value (CAD equiv.)</div>
+        <div class="total-ret">+$5,082 · +28.97% all time</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('exposure',this)">Exposure</div>
+      <div class="tab" onclick="showTab('holdings',this)">Holdings</div>
+      <div class="tab" onclick="showTab('dca',this)">DCA Optimizer <span class="nav-badge">NEW</span></div>
+    </div>
+
+    <!-- EXPOSURE TAB -->
+    <div id="tab-exposure">
+      <div class="sec-lbl">Concentration alerts</div>
+      <div class="exp-grid">
+        <div class="exp-card warn"><div class="exp-sector">Energy</div><div class="exp-pct warn">31.2%</div><div class="exp-val">$7,064 equiv.</div><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--red)"></div></div></div>
+        <div class="exp-card caution"><div class="exp-sector">Technology</div><div class="exp-pct caution">14.9%</div><div class="exp-val">$3,372 equiv.</div><div class="mini-bar"><div class="mini-fill" style="width:48%;background:var(--amber)"></div></div></div>
+        <div class="exp-card caution"><div class="exp-sector">Financials</div><div class="exp-pct caution">12.6%</div><div class="exp-val">$2,853 equiv.</div><div class="mini-bar"><div class="mini-fill" style="width:40%;background:var(--amber)"></div></div></div>
+        <div class="exp-card good"><div class="exp-sector">Broad Market</div><div class="exp-pct good">24.7%</div><div class="exp-val">$5,590 equiv.</div><div class="mini-bar"><div class="mini-fill" style="width:79%;background:var(--ws-green)"></div></div></div>
+      </div>
+      <div class="sec-lbl">Full sector breakdown</div>
+      <div class="breakdown">
+        <div class="s-row"><div class="s-name">Energy</div><div class="s-bar-wrap"><div class="s-bar" style="width:100%;background:#fc8181"></div></div><div class="s-pct" style="color:var(--red)">31.2%</div><div class="s-val">$7,064</div></div>
+        <div class="s-row"><div class="s-name">Broad Market ETFs</div><div class="s-bar-wrap"><div class="s-bar" style="width:79%;background:#a0aec0"></div></div><div class="s-pct" style="color:#4a5568">24.7%</div><div class="s-val">$5,590</div></div>
+        <div class="s-row"><div class="s-name">Technology</div><div class="s-bar-wrap"><div class="s-bar" style="width:48%;background:#68d391"></div></div><div class="s-pct" style="color:var(--pos)">14.9%</div><div class="s-val">$3,372</div></div>
+        <div class="s-row"><div class="s-name">Financials</div><div class="s-bar-wrap"><div class="s-bar" style="width:40%;background:#63b3ed"></div></div><div class="s-pct" style="color:var(--blue)">12.6%</div><div class="s-val">$2,853</div></div>
+        <div class="s-row"><div class="s-name">Emerging Markets</div><div class="s-bar-wrap"><div class="s-bar" style="width:22%;background:#b794f4"></div></div><div class="s-pct" style="color:#6b46c1">7.0%</div><div class="s-val">$1,584</div></div>
+        <div class="s-row"><div class="s-name">Materials / Commodities</div><div class="s-bar-wrap"><div class="s-bar" style="width:17%;background:#f6ad55"></div></div><div class="s-pct" style="color:var(--amber)">5.2%</div><div class="s-val">$1,177</div></div>
+        <div class="s-row"><div class="s-name">Gold</div><div class="s-bar-wrap"><div class="s-bar" style="width:14%;background:#d4a017"></div></div><div class="s-pct" style="color:#975a16">4.4%</div><div class="s-val">$998</div></div>
+        <div class="s-row"><div class="s-name">Nuclear / Uranium</div><div class="s-bar-wrap"><div class="s-bar" style="width:4%;background:#81e6d9"></div></div><div class="s-pct" style="color:#234e52">1.3%</div><div class="s-val">$297</div></div>
+      </div>
+    </div>
+
+    <!-- HOLDINGS TAB -->
+    <div id="tab-holdings" style="display:none">
+      <div class="h-card">
+        <div class="th-head"><div>Position</div><div>Sector</div><div>Return %</div><div>Value</div><div>Weight</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">AR</div><div><div class="t-name">ARGT</div><div class="t-full">Global X MSCI Argentina ETF</div></div></div><div><span class="stag tag-em">Emerging Markets</span></div><div class="col-ret pos">+20.75%</div><div class="col-val">$358 USD</div><div class="col-wt">1.6%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">BRK</div><div><div class="t-name">BRK.B</div><div class="t-full">Berkshire Hathaway Inc.</div></div></div><div><span class="stag tag-finance">Financials</span></div><div class="col-ret pos">+7.40%</div><div class="col-val">$2,518 USD</div><div class="col-wt">11.1%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">CP</div><div><div class="t-name">CPER</div><div class="t-full">US Commodity Index Fund</div></div></div><div><span class="stag tag-materials">Materials</span></div><div class="col-ret pos">+20.59%</div><div class="col-val">$741 USD</div><div class="col-wt">3.3%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">EN</div><div><div class="t-name">ENB</div><div class="t-full">Enbridge Inc</div></div></div><div><span class="stag tag-energy">Energy</span></div><div class="col-ret pos">+25.69%</div><div class="col-val">$727 CAD</div><div class="col-wt">3.2%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">EW</div><div><div class="t-name">EWZS</div><div class="t-full">iShares Brazil Small-Cap ETF</div></div></div><div><span class="stag tag-em">Emerging Markets</span></div><div class="col-ret pos">+23.92%</div><div class="col-val">$788 USD</div><div class="col-wt">3.5%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">IX</div><div><div class="t-name">IXC</div><div class="t-full">iShares Global Energy ETF</div></div></div><div><span class="stag tag-energy">Energy</span></div><div class="col-ret pos">+16.63%</div><div class="col-val">$870 USD</div><div class="col-wt">3.8%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">MS</div><div><div class="t-name">MSFT</div><div class="t-full">Microsoft Corp.</div></div></div><div><span class="stag tag-tech">Technology</span></div><div class="col-ret neg">−6.45%</div><div class="col-val">$397 USD</div><div class="col-wt">1.7%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">NK</div><div><div class="t-name">NKE</div><div class="t-full">Nike, Inc. (Class B)</div></div></div><div><span class="stag tag-consumer">Consumer</span></div><div class="col-ret pos">+1.13%</div><div class="col-val">$625 USD</div><div class="col-wt">2.8%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">NL</div><div><div class="t-name">NLR</div><div class="t-full">VanEck Uranium ETF</div></div></div><div><span class="stag tag-nuclear">Nuclear</span></div><div class="col-ret pos">+2.47%</div><div class="col-val">$297 USD</div><div class="col-wt">1.3%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">NU</div><div><div class="t-name">NU</div><div class="t-full">Nu Holdings Ltd</div></div></div><div><span class="stag tag-finance">Financials</span></div><div class="col-ret pos">+32.88%</div><div class="col-val">$1,499 USD</div><div class="col-wt">6.6%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">NV</div><div><div class="t-name">NVDA</div><div class="t-full">NVIDIA Corp</div></div></div><div><span class="stag tag-tech">Technology</span></div><div class="col-ret pos">+51.29%</div><div class="col-val">$182 USD</div><div class="col-wt">0.8%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">SH</div><div><div class="t-name">SHOP</div><div class="t-full">Shopify Inc.</div></div></div><div><span class="stag tag-tech">Technology</span></div><div class="col-ret pos">+41.80%</div><div class="col-val">$1,146 CAD</div><div class="col-wt">5.0%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">SP</div><div><div class="t-name">SPY</div><div class="t-full">SSGA SPDR S&P 500 ETF</div></div></div><div><span class="stag tag-broad">Broad Market</span></div><div class="col-ret pos">+32.17%</div><div class="col-val">$2,057 USD</div><div class="col-wt">9.1%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">ST</div><div><div class="t-name">STN</div><div class="t-full">Stantec Inc</div></div></div><div><span class="stag tag-materials">Materials</span></div><div class="col-ret pos">+8.90%</div><div class="col-val">$633 CAD</div><div class="col-wt">2.8%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">SZ</div><div><div class="t-name">SUZ</div><div class="t-full">Suzano S.A.</div></div></div><div><span class="stag tag-materials">Materials</span></div><div class="col-ret pos">+16.43%</div><div class="col-val">$455 USD</div><div class="col-wt">2.0%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">TS</div><div><div class="t-name">TSLA</div><div class="t-full">Tesla Inc</div></div></div><div><span class="stag tag-tech">Technology</span></div><div class="col-ret pos">+64.95%</div><div class="col-val">$403 USD</div><div class="col-wt">1.8%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">VD</div><div><div class="t-name">VDE</div><div class="t-full">Vanguard Energy ETF</div></div></div><div><span class="stag tag-energy">Energy</span></div><div class="col-ret pos">+18.41%</div><div class="col-val">$1,862 USD</div><div class="col-wt">8.2%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">VE</div><div><div class="t-name">VEE</div><div class="t-full">Vanguard FTSE Emerging Markets</div></div></div><div><span class="stag tag-em">Emerging Markets</span></div><div class="col-ret pos">+21.43%</div><div class="col-val">$1,192 CAD</div><div class="col-wt">5.2%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">VQ</div><div><div class="t-name">VEQT</div><div class="t-full">Vanguard All-Equity ETF</div></div></div><div><span class="stag tag-broad">Broad Market</span></div><div class="col-ret pos">+36.62%</div><div class="col-val">$2,544 CAD</div><div class="col-wt">11.2%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">VK</div><div><div class="t-name">VGK</div><div class="t-full">Vanguard European Equity Index</div></div></div><div><span class="stag tag-intl">International</span></div><div class="col-ret pos">+31.14%</div><div class="col-val">$363 USD</div><div class="col-wt">1.6%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">XQ</div><div><div class="t-name">XEQT</div><div class="t-full">iShares Core Equity ETF Portfolio</div></div></div><div><span class="stag tag-broad">Broad Market</span></div><div class="col-ret pos">+36.57%</div><div class="col-val">$421 CAD</div><div class="col-wt">1.9%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">ZD</div><div><div class="t-name">ZDV</div><div class="t-full">BMO Canadian Dividend ETF</div></div></div><div><span class="stag tag-finance">Financials</span></div><div class="col-ret pos">+38.45%</div><div class="col-val">$1,525 CAD</div><div class="col-wt">6.7%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">ZE</div><div><div class="t-name">ZEB</div><div class="t-full">BMO Equal Weight Banks ETF</div></div></div><div><span class="stag tag-finance">Financials</span></div><div class="col-ret pos">+52.63%</div><div class="col-val">$1,237 CAD</div><div class="col-wt">5.5%</div></div>
+        <div class="th-row"><div class="tk-wrap"><div class="tk-icon">ZG</div><div><div class="t-name">ZGLD</div><div class="t-full">BMO Gold Bullion ETF</div></div></div><div><span class="stag tag-gold">Gold</span></div><div class="col-ret pos">+99.27%</div><div class="col-val">$998 CAD</div><div class="col-wt">4.4%</div></div>
+      </div>
+    </div>
+
+    <!-- DCA TAB -->
+    <div id="tab-dca" style="display:none">
+      <div class="dca-steps">
+        <div class="snode active" id="sn1"><div class="scirc">1</div><div class="slbl">Your markets</div></div>
+        <div class="sline" id="sl1"></div>
+        <div class="snode" id="sn2"><div class="scirc">2</div><div class="slbl">Set targets</div></div>
+        <div class="sline" id="sl2"></div>
+        <div class="snode" id="sn3"><div class="scirc">3</div><div class="slbl">Your plan</div></div>
+      </div>
+      <div id="ds1">
+        <div class="dca-card">
+          <div class="dca-title">Which markets are you investing in?</div>
+          <div class="dca-desc">These are the sectors we found across your 24 positions. Select the ones you want to include in your rebalancing plan.</div>
+          <div class="chips-grid" id="chips-grid"></div>
+          <div style="margin-top:18px;display:flex;align-items:center;justify-content:space-between">
+            <div id="sel-count" style="font-size:12px;color:var(--text-muted)">0 sectors selected</div>
+            <button class="btn-p" id="btn-s1" onclick="goStep(2)" disabled>Set my targets →</button>
+          </div>
+        </div>
+      </div>
+      <div id="ds2" style="display:none">
+        <div class="dca-card">
+          <div class="dca-title">What's your target exposure?</div>
+          <div class="dca-desc">The <strong>now</strong> marker shows where you are today. Drag the slider to where you want to be. Targets must add up to ~100%.</div>
+          <div id="sliders-wrap"></div>
+          <div class="total-row" id="total-row">
+            <span id="total-lbl">Total: 0%</span>
+            <span id="total-status" style="font-size:11px"></span>
+          </div>
+          <div class="btn-row">
+            <button class="btn-g" onclick="goStep(1)">← Back</button>
+            <button class="btn-p" id="btn-s2" onclick="goStep(3)" disabled>Calculate my plan →</button>
+          </div>
+        </div>
+      </div>
+      <div id="ds3" style="display:none">
+        <div class="dca-card">
+          <div class="dca-title">Your DCA Plan</div>
+          <div class="dca-input-row">
+            <div class="dca-lbl">Monthly contribution</div>
+            <input class="dca-inp" id="dca-mo" value="$500" oninput="buildResult()">
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden" id="result-wrap"></div>
+          <div id="months-est"></div>
+          <div class="human-box"><div class="hico">⚖️</div><div><strong>Advisor review required before execution.</strong> Under IIROC/CSA suitability rules, any personalized reallocation must be confirmed by a registered advisor or acknowledged as self-directed.</div></div>
+          <div class="btn-row">
+            <button class="btn-g" onclick="goStep(2)">← Adjust targets</button>
+            <button class="btn-p" onclick="advisorFlow()">Review with advisor →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- AI SIDEBAR -->
+  <div class="sidebar">
+    <div class="ai-head">
+      <div class="ai-title-row"><div class="ai-dot"></div><div class="ai-title">Portfolio Intelligence</div></div>
+      <div class="ai-sub">AI-powered · educational only</div>
+    </div>
+    <div class="chat" id="chat"></div>
+    <div class="cin-area">
+      <div class="cin-row">
+        <textarea class="cin" id="txt" placeholder="Ask about your portfolio..." rows="1" onkeydown="kd(event)"></textarea>
+        <button class="send" onclick="send()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+      </div>
+    </div>
+    <div class="discl">Educational only · Not financial advice · Advisor confirmation required</div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// TABS
+function showTab(id,el){
+  ['exposure','holdings','dca'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===id?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// DCA DATA
+const SECTORS=[
+  {id:'energy',    name:'Energy',          cur:31.2,color:'#fc8181',tickers:['ENB','IXC','VDE'],        rep:'VDE'},
+  {id:'broad',     name:'Broad Market',    cur:24.7,color:'#a0aec0',tickers:['SPY','VEQT','XEQT'],      rep:'VEQT'},
+  {id:'tech',      name:'Technology',      cur:14.9,color:'#48bb78',tickers:['MSFT','NVDA','SHOP','TSLA'],rep:'SHOP'},
+  {id:'finance',   name:'Financials',      cur:12.6,color:'#63b3ed',tickers:['BRK.B','NU','ZDV','ZEB'], rep:'ZDV'},
+  {id:'em',        name:'Emerging Markets',cur:7.0, color:'#b794f4',tickers:['ARGT','EWZS','VEE'],       rep:'VEE'},
+  {id:'materials', name:'Materials',       cur:5.2, color:'#f6ad55',tickers:['CPER','STN','SUZ'],        rep:'CPER'},
+  {id:'gold',      name:'Gold',            cur:4.4, color:'#d4a017',tickers:['ZGLD'],                   rep:'ZGLD'},
+  {id:'nuclear',   name:'Nuclear/Uranium', cur:1.3, color:'#38b2ac',tickers:['NLR'],                    rep:'NLR'},
+];
+const sel=new Set(),tgt={};
+
+function buildChips(){
+  const g=document.getElementById('chips-grid'); g.innerHTML='';
+  SECTORS.forEach(s=>{
+    const d=document.createElement('div');
+    d.className='s-chip';d.id='chip-'+s.id;
+    d.innerHTML=`<div class="chip-cb" id="cb-${s.id}"></div><div class="chip-body"><div class="chip-name">${s.name}</div><div class="chip-now" style="color:${s.color}">${s.cur}% now</div><div class="chip-tix">${s.tickers.join(' · ')}</div></div>`;
+    d.onclick=()=>toggleChip(s.id);
+    g.appendChild(d);
+  });
+}
+function toggleChip(id){
+  const c=document.getElementById('chip-'+id),cb=document.getElementById('cb-'+id);
+  if(sel.has(id)){sel.delete(id);c.classList.remove('sel');cb.textContent='';}
+  else{sel.add(id);c.classList.add('sel');cb.textContent='✓';}
+  const n=sel.size;
+  document.getElementById('sel-count').textContent=n+' sector'+(n!==1?'s':'')+' selected';
+  document.getElementById('btn-s1').disabled=n<2;
+}
+function buildSliders(){
+  const w=document.getElementById('sliders-wrap');w.innerHTML='';
+  SECTORS.filter(s=>sel.has(s.id)).forEach(s=>{
+    if(tgt[s.id]===undefined)tgt[s.id]=s.cur;
+    const p=tgt[s.id],ml=Math.min(s.cur,50)*2;
+    const r=document.createElement('div');r.className='sl-row';
+    r.innerHTML=`<div class="sl-hd"><span class="sl-name" style="border-left:3px solid ${s.color};padding-left:8px">${s.name}</span><div class="sl-vals"><span class="sl-curr">${s.cur}% now</span><span class="sl-arr">→</span><span class="sl-tgt" id="tl-${s.id}">${p.toFixed(0)}%</span></div></div><div class="track-w"><div class="now-line" style="left:${ml}%"></div><div class="now-lbl" style="left:${ml}%">now</div><input type="range" min="0" max="50" step="1" value="${p.toFixed(0)}" oninput="onRange('${s.id}',this.value)"></div><div class="sl-tix">${s.tickers.join(' · ')}</div>`;
+    w.appendChild(r);
+  });
+  checkTotal();
+}
+function onRange(id,v){tgt[id]=+v;document.getElementById('tl-'+id).textContent=v+'%';checkTotal();}
+function checkTotal(){
+  const sum=SECTORS.filter(s=>sel.has(s.id)).reduce((a,s)=>a+(tgt[s.id]||0),0);
+  const lbl=document.getElementById('total-lbl'),st=document.getElementById('total-status'),row=document.getElementById('total-row'),btn=document.getElementById('btn-s2');
+  lbl.textContent='Total: '+sum.toFixed(0)+'%';
+  const d=sum-100;
+  if(Math.abs(d)<=3){st.textContent='✓ Balanced';st.style.color='var(--pos)';row.className='total-row ok';btn.disabled=false;}
+  else if(d>3){st.textContent='↑ '+d.toFixed(0)+'% over';st.style.color='var(--neg)';row.className='total-row over';btn.disabled=true;}
+  else{st.textContent=Math.abs(d).toFixed(0)+'% unallocated';st.style.color='var(--amber)';row.className='total-row under';btn.disabled=true;}
+}
+function buildResult(){
+  const mo=parseInt((document.getElementById('dca-mo').value||'500').replace(/\D/g,''))||500;
+  const rows=SECTORS.filter(s=>sel.has(s.id)).map(s=>({...s,target:tgt[s.id]||s.cur,gap:(tgt[s.id]||s.cur)-s.cur})).sort((a,b)=>b.gap-a.gap);
+  const under=rows.filter(r=>r.gap>0.5),tg=under.reduce((a,r)=>a+r.gap,0);
+  let html=`<div class="res-hd"><div>Sector</div><div style="text-align:right">Gap</div><div style="text-align:right">Monthly DCA</div><div style="text-align:right">% of DCA</div></div>`;
+  rows.forEach(r=>{
+    const isU=r.gap>0.5,isO=r.gap<-0.5,alloc=isU&&tg>0?Math.round((r.gap/tg)*mo):0,pct=mo>0?Math.round((alloc/mo)*100):0;
+    html+=`<div class="res-row"><div><div class="res-sec" style="border-left:3px solid ${r.color};padding-left:7px">${r.name}</div><div class="res-rep">${r.rep}</div></div><div class="res-gap ${isU?'under':isO?'over':'flat'}" style="text-align:right">${isU?'+'+r.gap.toFixed(0)+'% under':isO?r.gap.toFixed(0)+'% over':'On target'}</div><div class="res-amt ${alloc>0?'invest':'pause'}" style="text-align:right">${alloc>0?'+$'+alloc+'/mo':'Pause'}</div><div class="res-pct">${alloc>0?pct+'%':'—'}</div></div>`;
+  });
+  document.getElementById('result-wrap').innerHTML=html;
+  const dolGap=(under.length>0?under.reduce((a,r)=>a+r.gap,0)/under.length:0)/100*22631,months=mo>0&&dolGap>0?Math.ceil(dolGap/mo):0;
+  document.getElementById('months-est').innerHTML=months>0?`<div class="months-bar">~${months} months to reach your targets at $${mo.toLocaleString()}/mo — no sells required</div>`:'';
+}
+function goStep(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('ds'+i).style.display=i===n?'block':'none';
+    const sn=document.getElementById('sn'+i);
+    sn.className='snode'+(i===n?' active':i<n?' done':'');
+  });
+  document.getElementById('sl1').className='sline'+(n>1?' done':'');
+  document.getElementById('sl2').className='sline'+(n>2?' done':'');
+  if(n===2)buildSliders();
+  if(n===3)buildResult();
+}
+buildChips();
+
+// CHAT
+const STEPS={
+  1:{
+    res:{
+      'I believed in pipeline demand & energy transition':{t:`That makes sense — pipeline infrastructure has been a strong thesis, and the returns back it up: ENB +25%, VDE +18%, IXC +16%.<br><br>Here's something worth reflecting on: <strong>when you look at that thesis today, does it feel like you're still early — or more like you've already captured most of the move?</strong>`},
+      'Honestly it just grew — I kept buying on dips':{t:`Honestly, that's how a lot of concentrated positions happen — and the discipline of buying dips is real.<br><br>But here's an interesting question: <strong>if energy weren't already 31% of your portfolio, would you choose to put 31% there today?</strong>`},
+      'Inflation protection & dividend income':{t:`Smart — ENB and VDE both throw off solid dividends, and energy historically holds up during inflationary periods.<br><br>One thing to explore: <strong>is dividend income still your main goal for this TFSA, or has your thinking shifted toward more growth over time?</strong>`},
+    },
+    chips:[
+      {l:"Feels like I've captured most of the move",i:'📉',k:'captured'},
+      {l:"Still early — energy has more runway",i:'🛢️',k:'runway'},
+      {l:"Not sure, that's why I'm here",i:'🤔',k:'unsure'},
+    ],next:2
+  },
+  2:{
+    res:{
+      captured:{t:`That's a healthy instinct — recognizing when a thesis has played out. You've got real gains to protect here.<br><br>Different question: <strong>when you think about this money, is there a point in your life where you'd want to start drawing on it?</strong>`},
+      runway:{t:`Fair — there are structural arguments for energy demand over the next few years, especially with LNG exports and AI data center power needs.<br><br>Worth thinking about: <strong>when you imagine looking back at your TFSA in 10 years, what do you want to have done with this period of growth?</strong>`},
+      unsure:{t:`That's the most honest answer, and honestly the most useful starting point.<br><br>Let me reframe it: <strong>if energy dropped 20% tomorrow and stayed flat for 2 years — would that feel like a buying opportunity, or would it make you wish you'd diversified?</strong>`},
+    },
+    chips:[
+      {l:"I'd want to start using it in 8–12 years",i:'🗓️',k:'longterm'},
+      {l:"5–7 years, medium-term goal",i:'📅',k:'midterm'},
+      {l:"It'd feel like a buying opportunity",i:'💪',k:'buydip'},
+      {l:"I'd wish I had diversified",i:'😬',k:'diversify'},
+    ],next:3
+  },
+  3:{
+    res:{
+      longterm:{t:`10+ years is a strong position — you have time to ride volatility and let compounding work.<br><br>Good to know. And currently: <strong>are you actively adding money to this TFSA?</strong>`},
+      midterm:{t:`5–7 years is meaningful — close enough that a rough few years in energy could affect your plans.<br><br>And currently: <strong>are you regularly adding to this account?</strong>`},
+      buydip:{t:`That conviction tells me you're not rattled easily. The question then isn't whether to panic-sell — it's whether your <em>new money</em> is being deployed as strategically as your existing positions.<br><br><strong>Are you still contributing regularly to this TFSA?</strong>`},
+      diversify:{t:`That reaction is worth naming — it tells me the concentration creates some anxiety even if you believe in energy. That's useful data.<br><br><strong>Are you currently adding money to this TFSA?</strong>`},
+    },
+    chips:[
+      {l:"Yes — I contribute monthly",i:'📆',k:'monthly'},
+      {l:"Occasionally, when I have extra cash",i:'💸',k:'occasional'},
+      {l:"Not actively right now",i:'⏸️',k:'inactive'},
+    ],next:4
+  },
+  4:{
+    res:{
+      monthly:{t:`Regular contributions are your biggest lever — they let you rebalance without selling anything.<br><br>Just so I can model this properly: <strong>roughly how much are you putting in each month?</strong>`},
+      occasional:{t:`Irregular contributions still work — you just need a clear rule for where each deposit goes.<br><br>To give you something concrete: <strong>what's a realistic monthly amount you could commit to?</strong>`},
+      inactive:{t:`Got it — the portfolio is growing on its own for now.<br><br><strong>Is there any chance you'd start contributing again in the next 6–12 months?</strong>`},
+    },
+    chips:[
+      {l:'Around $500/month',i:'💵',k:'500'},
+      {l:'Around $250/month',i:'💵',k:'250'},
+      {l:'Around $1,000/month',i:'💵',k:'1000'},
+      {l:'Around $200–300/month',i:'💵',k:'200'},
+    ],next:5
+  },
+  5:{final:true,amounts:{500:500,250:250,1000:1000,200:250}}
+};
+const FR={
+  'Review with a Wealthsimple advisor':`I'll send this full conversation to a Wealthsimple advisor for review. They'll see your portfolio, the analysis, and your goals — no need to repeat anything.<br><br><strong>Under IIROC/CSA suitability rules, this step protects both you and Wealthsimple.</strong> The AI diagnoses and educates — the execution decision stays human. That's by design.`,
+  'Show me the 12-month projection':`At your DCA amount redirected away from energy:<br><br><strong>Energy:</strong> 31.2% → ~19% ✓<br><strong>Broad Market:</strong> 24.7% → ~31% ↑<br><strong>Emerging Markets:</strong> 7.0% → ~9% ↑<br><strong>Nuclear:</strong> 1.3% → ~3% ↑<br><br>No sells. No capital gains events in TFSA. Just redirected new money.`,
+  'Am I overlapping in Canadian banks?':`Yes — ZEB and ZDV have significant overlap. Both hold Royal Bank, TD, Scotiabank, and BMO heavily. You're essentially doubling up on Canadian bank exposure at ~12% combined.<br><br>If the BoC cuts rates further, bank margins compress. Worth knowing before adding more to either.`,
+};
+
+function addUser(t){const c=document.getElementById('chat'),d=document.createElement('div');d.className='msg msg-user';d.innerHTML=`<div class="msg-lbl">You</div><div class="bbl-user">${t}</div>`;c.appendChild(d);c.scrollTop=9999;}
+function addAI(h){const c=document.getElementById('chat'),d=document.createElement('div');d.className='msg';d.innerHTML=`<div class="msg-lbl">AI</div><div class="bbl-ai">${h}</div>`;c.appendChild(d);c.scrollTop=9999;}
+function addTyping(){const c=document.getElementById('chat'),d=document.createElement('div');d.className='msg';d.innerHTML=`<div class="msg-lbl">AI</div><div class="bbl-ai"><div class="typing"><span></span><span></span><span></span></div></div>`;c.appendChild(d);c.scrollTop=9999;return d;}
+function addChips(chips,step){
+  const c=document.getElementById('chat'),w=document.createElement('div');w.className='qchips';w.id='cw-'+step;
+  chips.forEach(ch=>{const b=document.createElement('button');b.className='qchip';b.innerHTML=`<span class="qchip-ic">${ch.i}</span>${ch.l}`;b.onclick=()=>advance(step,ch.k,ch.l);w.appendChild(b);});
+  c.appendChild(w);c.scrollTop=9999;
+}
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function advance(step,key,label){
+  const cw=document.getElementById('cw-'+step);if(cw)cw.remove();
+  addUser(label);
+  const st=STEPS[step];
+  if(st.final){showPlan(st.amounts[key]||500);return;}
+  const t=addTyping();await wait(900);t.remove();
+  const resp=st.res[key]||st.res[Object.keys(st.res)[0]];
+  addAI(resp.t);
+  await wait(150);
+  addChips(st.chips,st.next);
+}
+
+async function showPlan(mo){
+  const t=addTyping();await wait(1000);t.remove();
+  const v1=Math.round(mo*.35),v2=Math.round(mo*.20),v3=Math.round(mo*.15),v4=Math.round(mo*.15);
+  addAI(`Here's what I'm hearing: you've built a strong energy position intentionally, you believe there's still some runway — but you're ready to start diversifying your <em>new money</em> rather than selling what's working.<br><br><strong>No sells. No tax events. Just redirect contributions.</strong><br><br>At <strong>$${mo.toLocaleString()}/month</strong>, this brings energy from 31% → ~19% over 12 months:
+<div class="rb-prev">
+  <div class="rb-row"><div><div class="rb-t">VEQT ↑</div><div class="rb-a">Broad market — your foundation</div></div><div class="rb-v buy">+$${v1}/mo</div></div>
+  <div class="rb-row"><div><div class="rb-t">ZDV ↑</div><div class="rb-a">Dividends — keeps income thesis alive</div></div><div class="rb-v buy">+$${v2}/mo</div></div>
+  <div class="rb-row"><div><div class="rb-t">NLR ↑</div><div class="rb-a">Nuclear — energy exposure, diversified</div></div><div class="rb-v buy">+$${v3}/mo</div></div>
+  <div class="rb-row"><div><div class="rb-t">VEE ↑</div><div class="rb-a">Emerging markets — underweight</div></div><div class="rb-v buy">+$${v4}/mo</div></div>
+  <div class="rb-row"><div><div class="rb-t">VDE / IXC / ENB</div><div class="rb-a">Pause new contributions</div></div><div class="rb-v hold">$0/mo</div></div>
+</div>
+<div class="hbox-sm"><span>⚖️</span><div><strong>One last step.</strong> Under IIROC/CSA, a personalized plan needs advisor confirmation. Tap below to review with a Wealthsimple advisor — they'll have this full conversation as context.</div></div>`);
+  await wait(150);
+  const c=document.getElementById('chat'),w=document.createElement('div');w.className='qchips';w.id='cw-99';
+  [{i:'⚖️',l:'Review with a Wealthsimple advisor'},{i:'📈',l:'Show me the 12-month projection'},{i:'🏦',l:'Am I overlapping in Canadian banks?'}].forEach(ch=>{
+    const b=document.createElement('button');b.className='qchip';b.innerHTML=`<span class="qchip-ic">${ch.i}</span>${ch.l}`;
+    b.onclick=()=>{document.getElementById('cw-99')?.remove();handleFree(ch.l);};
+    w.appendChild(b);
+  });
+  c.appendChild(w);c.scrollTop=9999;
+}
+
+async function handleFree(txt){
+  addUser(txt);const t=addTyping();await wait(900);t.remove();
+  addAI(FR[txt]||`Based on your portfolio, your 31.2% energy concentration is the most important factor to address first. Want me to model a specific scenario?`);
+}
+async function advisorFlow(){await handleFree('Review with a Wealthsimple advisor');}
+function kd(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+async function send(){const el=document.getElementById('txt'),txt=el.value.trim();if(!txt)return;el.value='';await handleFree(txt);}
+
+// Init chat
+(async()=>{
+  await wait(400);
+  addAI(`Hey Cassio — I've looked across your 24 positions. Overall returns are strong (+28.97%), but one pattern stands out:<br><br>
+<span class="itag itag-r">⚡ 31.2% Energy</span>
+<span class="itag itag-a">🏦 Financials overlap</span>
+<span class="itag itag-g">✓ Strong returns</span>
+<br><br>ENB, IXC, and VDE together make up nearly a third of your TFSA. That's not necessarily wrong — but it's worth understanding if it's intentional.<br><br><strong>Do you remember why you built this energy position up?</strong>`);
+  await wait(150);
+  addChips([
+    {i:'🛢️',l:"I believed in pipeline demand & energy transition",k:"I believed in pipeline demand & energy transition"},
+    {i:'📉',l:"Honestly it just grew — I kept buying on dips",k:"Honestly it just grew — I kept buying on dips"},
+    {i:'💰',l:"Inflation protection & dividend income",k:"Inflation protection & dividend income"},
+  ],1);
+})();
+</script>
+</body>
+</html>
