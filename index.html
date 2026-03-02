@@ -243,6 +243,70 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border-mid);border-radius:2px;}
+
+/* HEATMAP */
+.heatmap-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-top:22px;}
+.heatmap-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.heatmap-sub{font-size:11px;color:var(--text-muted);margin-bottom:16px;}
+.world-wrap{position:relative;width:100%;background:#f0f4f8;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.world-wrap svg{width:100%;height:auto;display:block;}
+.region-bubble{position:absolute;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%);pointer-events:none;}
+.rbubble{border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-family:'DM Mono',monospace;border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.rlabel{font-size:9px;font-weight:600;color:var(--text-muted);margin-top:4px;white-space:nowrap;background:rgba(255,255,255,.85);padding:1px 5px;border-radius:3px;}
+.geo-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.geo-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted);}
+.geo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* MARKET PULSE TAB */
+.pulse-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+.pulse-title{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-.3px;}
+.pulse-sub{font-size:12px;color:var(--text-muted);margin-top:3px;}
+.pulse-refresh{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.pulse-refresh:hover{border-color:var(--ws-green);color:var(--ws-green-dk);}
+.pulse-refresh svg{width:13px;height:13px;transition:transform .4s;}
+.pulse-refresh.loading svg{animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.news-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.news-spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--ws-green);border-radius:50%;animation:spin .8s linear infinite;}
+.news-loading-txt{font-size:12px;color:var(--text-muted);text-align:center;line-height:1.6;}
+
+.news-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+.news-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;transition:box-shadow .2s;cursor:pointer;}
+.news-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07);border-color:var(--border-mid);}
+.news-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.news-headline{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;flex:1;}
+.news-source{font-size:10px;color:var(--text-dim);white-space:nowrap;font-family:'DM Mono',monospace;margin-top:2px;}
+.news-relevance{font-size:12px;color:var(--text-muted);line-height:1.5;margin-bottom:8px;}
+.news-tickers{display:flex;gap:5px;flex-wrap:wrap;}
+.news-ticker{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;font-family:'DM Mono',monospace;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);}
+.news-ticker.hot{background:var(--red-lt);border-color:rgba(229,62,62,.2);color:var(--red);}
+.news-ticker.warm{background:var(--amber-lt);border-color:rgba(217,119,6,.2);color:var(--amber);}
+.news-ticker.ok{background:var(--ws-green-lt);border-color:rgba(0,195,122,.2);color:var(--ws-green-dk);}
+.news-sentiment{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin-left:auto;}
+.sent-bull{background:var(--ws-green-lt);color:var(--ws-green-dk);}
+.sent-bear{background:var(--red-lt);color:var(--red);}
+.sent-neut{background:var(--surface2);color:var(--text-muted);}
+
+/* WATCHDOG */
+.watchdog-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+.watchdog-title{font-size:14px;font-weight:600;margin-bottom:4px;}
+.watchdog-sub{font-size:11px;color:var(--text-muted);margin-bottom:16px;line-height:1.5;}
+.watch-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
+.watch-row:last-child{border-bottom:none;}
+.watch-info{flex:1;}
+.watch-name{font-size:13px;font-weight:600;color:var(--text);}
+.watch-tickers{font-size:10px;color:var(--text-dim);margin-top:2px;font-family:'DM Mono',monospace;}
+.watch-weight{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);min-width:40px;text-align:right;}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0;cursor:pointer;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{position:absolute;inset:0;background:var(--border-mid);border-radius:11px;transition:background .2s;}
+.toggle input:checked+.toggle-track{background:var(--ws-green);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s;}
+.toggle input:checked~.toggle-thumb{transform:translateX(18px);}
+
+.pstep{display:flex;align-items:center;gap:8px;padding:8px 13px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);margin-bottom:6px;font-size:12px;color:var(--text-dim);transition:all .4s ease;}
+.pstep-active{background:var(--ws-green-lt) !important;border-color:rgba(0,195,122,.25) !important;color:var(--ws-green-dk) !important;font-weight:500;}
 </style>
 </head>
 <body>
@@ -280,6 +344,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <div class="tab active" onclick="showTab('exposure',this)">Exposure</div>
       <div class="tab" onclick="showTab('holdings',this)">Holdings</div>
       <div class="tab" onclick="showTab('dca',this)">DCA Optimizer <span class="nav-badge">NEW</span></div>
+      <div class="tab" onclick="showTab('pulse',this)">Market Pulse <span class="nav-badge" style="background:#e53e3e">LIVE</span></div>
     </div>
 
     <!-- EXPOSURE TAB -->
@@ -301,6 +366,67 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="s-row"><div class="s-name">Materials / Commodities</div><div class="s-bar-wrap"><div class="s-bar" style="width:17%;background:#f6ad55"></div></div><div class="s-pct" style="color:var(--amber)">5.2%</div><div class="s-val">$1,177</div></div>
         <div class="s-row"><div class="s-name">Gold</div><div class="s-bar-wrap"><div class="s-bar" style="width:14%;background:#d4a017"></div></div><div class="s-pct" style="color:#975a16">4.4%</div><div class="s-val">$998</div></div>
         <div class="s-row"><div class="s-name">Nuclear / Uranium</div><div class="s-bar-wrap"><div class="s-bar" style="width:4%;background:#81e6d9"></div></div><div class="s-pct" style="color:#234e52">1.3%</div><div class="s-val">$297</div></div>
+      </div>
+
+      <!-- GEOGRAPHIC HEATMAP -->
+      <div class="heatmap-card">
+        <div class="heatmap-title">Geographic exposure</div>
+        <div class="heatmap-sub">Portfolio weight by region — sized by allocation</div>
+        <div class="world-wrap" style="min-height:220px;position:relative;">
+          <!-- Simplified SVG world outline -->
+          <svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg" style="opacity:.12">
+            <!-- North America -->
+            <path d="M80,60 L200,50 L240,80 L250,140 L220,180 L180,200 L140,220 L100,200 L70,160 L60,100 Z" fill="#666"/>
+            <!-- South America -->
+            <path d="M175,250 L235,238 L265,275 L275,340 L255,400 L215,420 L182,390 L162,328 L155,278 Z" fill="#666"/>
+            <!-- Europe -->
+            <path d="M380,50 L460,45 L480,70 L470,110 L440,120 L400,115 L375,90 Z" fill="#666"/>
+            <!-- Africa -->
+            <path d="M390,130 L460,120 L490,160 L500,240 L480,310 L440,330 L400,310 L375,250 L370,180 Z" fill="#666"/>
+            <!-- Asia -->
+            <path d="M490,40 L680,30 L720,60 L730,130 L700,160 L640,170 L560,150 L510,120 L480,80 Z" fill="#666"/>
+            <!-- Australia -->
+            <path d="M640,270 L730,260 L760,290 L760,340 L720,360 L660,350 L630,320 L625,285 Z" fill="#666"/>
+          </svg>
+          <!-- Region bubbles positioned over map -->
+          <div class="region-bubble" style="left:22%;top:36%">
+            <div class="rbubble" style="width:64px;height:64px;font-size:13px;background:rgba(229,62,62,.85)">38.5%</div>
+            <div class="rlabel">🇺🇸 USA</div>
+          </div>
+          <div class="region-bubble" style="left:27%;top:70%">
+            <div class="rbubble" style="width:42px;height:42px;font-size:11px;background:rgba(99,179,237,.85)">8.7%</div>
+            <div class="rlabel">🇧🇷 Brazil</div>
+          </div>
+          <div class="region-bubble" style="left:26%;top:28%">
+            <div class="rbubble" style="width:52px;height:52px;font-size:12px;background:rgba(246,173,85,.85)">22.4%</div>
+            <div class="rlabel">🇨🇦 Canada</div>
+          </div>
+          <div class="region-bubble" style="left:46%;top:22%">
+            <div class="rbubble" style="width:32px;height:32px;font-size:10px;background:rgba(104,211,145,.85)">5.8%</div>
+            <div class="rlabel">🇪🇺 Europe</div>
+          </div>
+          <div class="region-bubble" style="left:64%;top:38%">
+            <div class="rbubble" style="width:38px;height:38px;font-size:10px;background:rgba(183,148,244,.85)">12.4%</div>
+            <div class="rlabel">🌏 Asia/EM</div>
+          </div>
+          <div class="region-bubble" style="left:74%;top:68%">
+            <div class="rbubble" style="width:22px;height:22px;font-size:9px;background:rgba(129,230,217,.85)">2.2%</div>
+            <div class="rlabel">🇦🇺 Aus</div>
+          </div>
+          <div class="region-bubble" style="left:25%;top:82%">
+            <div class="rbubble" style="width:18px;height:18px;font-size:8px;background:rgba(183,148,244,.7)">2.1%</div>
+            <div class="rlabel">🇦🇷 Arg</div>
+          </div>
+        </div>
+        <div class="geo-legend" style="margin-top:12px">
+          <div class="geo-item"><div class="geo-dot" style="background:rgba(229,62,62,.85)"></div>USA 38.5%</div>
+          <div class="geo-item"><div class="geo-dot" style="background:rgba(246,173,85,.85)"></div>Canada 22.4%</div>
+          <div class="geo-item"><div class="geo-dot" style="background:rgba(183,148,244,.85)"></div>Asia/EM 12.4%</div>
+          <div class="geo-item"><div class="geo-dot" style="background:rgba(99,179,237,.85)"></div>Brazil 8.7%</div>
+          <div class="geo-item"><div class="geo-dot" style="background:rgba(104,211,145,.85)"></div>Europe 5.8%</div>
+          <div class="geo-item"><div class="geo-dot" style="background:rgba(129,230,217,.85)"></div>Australia 2.2%</div>
+          <div class="geo-item"><div class="geo-dot" style="background:rgba(183,148,244,.7)"></div>Argentina 2.1%</div>
+        </div>
       </div>
     </div>
 
@@ -347,9 +473,34 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <div id="ds1">
         <div class="dca-card">
           <div class="dca-title">Which markets are you investing in?</div>
-          <div class="dca-desc">These are the sectors we found across your 24 positions. Select the ones you want to include in your rebalancing plan.</div>
+          <div class="dca-desc">These are the sectors we detected across your 24 positions. Select <strong>at least 2</strong> — you need a source and a destination to rebalance. For example: reduce Energy, grow Broad Market.</div>
+
+          <div style="display:flex;margin-bottom:18px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface2)">
+            <div style="flex:1;padding:11px 10px;border-right:1px solid var(--border);text-align:center">
+              <div style="font-size:16px;margin-bottom:3px">☑️</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px">Pick markets</div>
+              <div style="font-size:10px;color:var(--text-muted)">Min. 2 sectors</div>
+            </div>
+            <div style="flex:1;padding:11px 10px;border-right:1px solid var(--border);text-align:center">
+              <div style="font-size:16px;margin-bottom:3px">🎚️</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px">Set targets</div>
+              <div style="font-size:10px;color:var(--text-muted)">Total must = 100%</div>
+            </div>
+            <div style="flex:1;padding:11px 10px;text-align:center">
+              <div style="font-size:16px;margin-bottom:3px">📋</div>
+              <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px">Get your plan</div>
+              <div style="font-size:10px;color:var(--text-muted)">Monthly DCA split</div>
+            </div>
+          </div>
+
           <div class="chips-grid" id="chips-grid"></div>
-          <div style="margin-top:18px;display:flex;align-items:center;justify-content:space-between">
+
+          <div id="sel-hint" style="margin-top:14px;padding:10px 14px;border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);transition:all .3s">
+            <span id="sel-hint-icon">👆</span>
+            <span id="sel-hint-text">Select your first sector above to get started</span>
+          </div>
+
+          <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">
             <div id="sel-count" style="font-size:12px;color:var(--text-muted)">0 sectors selected</div>
             <button class="btn-p" id="btn-s1" onclick="goStep(2)" disabled>Set my targets →</button>
           </div>
@@ -358,7 +509,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <div id="ds2" style="display:none">
         <div class="dca-card">
           <div class="dca-title">What's your target exposure?</div>
-          <div class="dca-desc">The <strong>now</strong> marker shows where you are today. Drag the slider to where you want to be. Targets must add up to ~100%.</div>
+          <div class="dca-desc">The <strong>now</strong> marker shows where you are today. Drag each slider to your target. The total must add up to <strong>100%</strong> before you can continue — if you're over or under, adjust any slider until the counter turns green.</div>
           <div id="sliders-wrap"></div>
           <div class="total-row" id="total-row">
             <span id="total-lbl">Total: 0%</span>
@@ -388,6 +539,36 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       </div>
     </div>
 
+
+    <!-- MARKET PULSE TAB -->
+    <div id="tab-pulse" style="display:none">
+      <div class="pulse-header">
+        <div>
+          <div class="pulse-title">Market Pulse</div>
+          <div class="pulse-sub">Live news filtered to your 24 holdings — powered by AI web search</div>
+        </div>
+        <button class="pulse-refresh" id="refresh-btn" onclick="loadNews()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <!-- NEWS FEED -->
+      <div id="news-container">
+        <div class="news-loading" id="news-loading">
+          <div class="news-spinner"></div>
+          <div class="news-loading-txt">Scanning markets for news relevant to your holdings...<br><span style="color:var(--text-dim);font-size:11px">ENB · VDE · IXC · NLR · SHOP · NU · ZEB · VEQT and more</span></div>
+        </div>
+      </div>
+
+      <!-- WATCHDOG -->
+      <div class="watchdog-card" id="watchdog-section" style="display:none">
+        <div class="watchdog-title">🐕 Watchdog alerts</div>
+        <div class="watchdog-sub">Toggle on to get notified when significant news hits your specific holdings. Alerts are scoped to your actual positions — not generic market news.</div>
+        <div id="watchdog-rows"></div>
+      </div>
+    </div>
+
   </div><!-- /main -->
 
   <!-- AI SIDEBAR -->
@@ -409,221 +590,180 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 </div><!-- /app -->
 
 <script>
+(async()=>{
+  await wait(400);
+  const greeting = "Hey Cassio \u2014 I've looked across your 24 positions. Overall returns are strong (+28.97%), but one pattern stands out:<br><br>"
+    + '<span class="itag itag-r">\u26a1 31.2% Energy</span>'
+    + '<span class="itag itag-a">\ud83c\udfe6 Financials overlap</span>'
+    + '<span class="itag itag-g">\u2713 Strong returns</span>'
+    + "<br><br>ENB, IXC, and VDE together make up nearly a third of your TFSA. That's not necessarily wrong \u2014 but it's worth understanding if it's intentional.<br><br><strong>Do you remember why you built this energy position up?</strong>";
+  addAI(greeting);
+  await wait(150);
+  addChips([
+    {i:'\ud83d\udee2\ufe0f',l:"I believed in pipeline demand & energy transition",k:"I believed in pipeline demand & energy transition"},
+    {i:'\ud83d\udcc9',l:"Honestly it just grew \u2014 I kept buying on dips",k:"Honestly it just grew \u2014 I kept buying on dips"},
+    {i:'\ud83d\udcb0',l:"Inflation protection & dividend income",k:"Inflation protection & dividend income"},
+  ],1);
+})();
+
 // TABS
 function showTab(id,el){
-  ['exposure','holdings','dca'].forEach(t=>{
+  ['exposure','holdings','dca','pulse'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===id?'block':'none';
   });
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
+  if(id==='pulse' && !newsLoaded) loadNews();
 }
 
-// DCA DATA
-const SECTORS=[
-  {id:'energy',    name:'Energy',          cur:31.2,color:'#fc8181',tickers:['ENB','IXC','VDE'],        rep:'VDE'},
-  {id:'broad',     name:'Broad Market',    cur:24.7,color:'#a0aec0',tickers:['SPY','VEQT','XEQT'],      rep:'VEQT'},
-  {id:'tech',      name:'Technology',      cur:14.9,color:'#48bb78',tickers:['MSFT','NVDA','SHOP','TSLA'],rep:'SHOP'},
-  {id:'finance',   name:'Financials',      cur:12.6,color:'#63b3ed',tickers:['BRK.B','NU','ZDV','ZEB'], rep:'ZDV'},
-  {id:'em',        name:'Emerging Markets',cur:7.0, color:'#b794f4',tickers:['ARGT','EWZS','VEE'],       rep:'VEE'},
-  {id:'materials', name:'Materials',       cur:5.2, color:'#f6ad55',tickers:['CPER','STN','SUZ'],        rep:'CPER'},
-  {id:'gold',      name:'Gold',            cur:4.4, color:'#d4a017',tickers:['ZGLD'],                   rep:'ZGLD'},
-  {id:'nuclear',   name:'Nuclear/Uranium', cur:1.3, color:'#38b2ac',tickers:['NLR'],                    rep:'NLR'},
+// ── MARKET PULSE ─────────────────────────────────────────────────
+let newsLoaded = false;
+
+const WATCHDOG_SECTORS = [
+  {name:'Energy',          weight:'31.2%', tickers:'ENB · IXC · VDE',        color:'#fc8181'},
+  {name:'Technology',      weight:'14.9%', tickers:'MSFT · NVDA · SHOP · TSLA', color:'#68d391'},
+  {name:'Financials',      weight:'12.6%', tickers:'BRK.B · NU · ZDV · ZEB', color:'#63b3ed'},
+  {name:'Emerging Markets',weight:'7.0%',  tickers:'ARGT · EWZS · VEE',       color:'#b794f4'},
+  {name:'Nuclear/Uranium', weight:'1.3%',  tickers:'NLR',                     color:'#81e6d9'},
+  {name:'Gold',            weight:'4.4%',  tickers:'ZGLD',                    color:'#d4a017'},
 ];
-const sel=new Set(),tgt={};
 
-function buildChips(){
-  const g=document.getElementById('chips-grid'); g.innerHTML='';
-  SECTORS.forEach(s=>{
-    const d=document.createElement('div');
-    d.className='s-chip';d.id='chip-'+s.id;
-    d.innerHTML=`<div class="chip-cb" id="cb-${s.id}"></div><div class="chip-body"><div class="chip-name">${s.name}</div><div class="chip-now" style="color:${s.color}">${s.cur}% now</div><div class="chip-tix">${s.tickers.join(' · ')}</div></div>`;
-    d.onclick=()=>toggleChip(s.id);
-    g.appendChild(d);
+function buildWatchdog(){
+  const wrap = document.getElementById('watchdog-rows');
+  wrap.innerHTML = '';
+  WATCHDOG_SECTORS.forEach(function(s,i){
+    const row = document.createElement('div');
+    row.className = 'watch-row';
+    row.innerHTML = '<div style="width:10px;height:10px;border-radius:50%;background:' + s.color + ';flex-shrink:0"></div>' +
+      '<div class="watch-info">' +
+        '<div class="watch-name">' + s.name + '</div>' +
+        '<div class="watch-tickers">Watching: ' + s.tickers + '</div>' +
+      '</div>' +
+      '<div class="watch-weight">' + s.weight + '</div>' +
+      '<label class="toggle">' +
+        '<input type="checkbox" ' + (i < 3 ? 'checked' : '') + ' onchange="toggleWatch(this,' + "'" + s.name + "'" + ')">' +
+        '<div class="toggle-track"></div>' +
+        '<div class="toggle-thumb"></div>' +
+      '</label>';
+    wrap.appendChild(row);
   });
+  document.getElementById('watchdog-section').style.display = 'block';
 }
-function toggleChip(id){
-  const c=document.getElementById('chip-'+id),cb=document.getElementById('cb-'+id);
-  if(sel.has(id)){sel.delete(id);c.classList.remove('sel');cb.textContent='';}
-  else{sel.add(id);c.classList.add('sel');cb.textContent='✓';}
-  const n=sel.size;
-  document.getElementById('sel-count').textContent=n+' sector'+(n!==1?'s':'')+' selected';
-  document.getElementById('btn-s1').disabled=n<2;
+function toggleWatch(cb, name){
+  // Visual feedback only in prototype
 }
-function buildSliders(){
-  const w=document.getElementById('sliders-wrap');w.innerHTML='';
-  SECTORS.filter(s=>sel.has(s.id)).forEach(s=>{
-    if(tgt[s.id]===undefined)tgt[s.id]=s.cur;
-    const p=tgt[s.id],ml=Math.min(s.cur,50)*2;
-    const r=document.createElement('div');r.className='sl-row';
-    r.innerHTML=`<div class="sl-hd"><span class="sl-name" style="border-left:3px solid ${s.color};padding-left:8px">${s.name}</span><div class="sl-vals"><span class="sl-curr">${s.cur}% now</span><span class="sl-arr">→</span><span class="sl-tgt" id="tl-${s.id}">${p.toFixed(0)}%</span></div></div><div class="track-w"><div class="now-line" style="left:${ml}%"></div><div class="now-lbl" style="left:${ml}%">now</div><input type="range" min="0" max="50" step="1" value="${p.toFixed(0)}" oninput="onRange('${s.id}',this.value)"></div><div class="sl-tix">${s.tickers.join(' · ')}</div>`;
-    w.appendChild(r);
+
+async function loadNews(){
+  newsLoaded = false;
+  var container = document.getElementById('news-container');
+  var btn = document.getElementById('refresh-btn');
+  btn.classList.add('loading');
+  document.getElementById('watchdog-section').style.display = 'none';
+
+  // Build loading UI - all steps start grey
+  container.innerHTML =
+    '<div class="news-loading" id="news-loading" style="gap:16px;padding:36px 24px">' +
+      '<div class="news-spinner"></div>' +
+      '<div style="width:100%;max-width:340px" id="steps-wrap">' +
+        '<div id="ps1" class="pstep">&#9889; Scanning Energy positions &mdash; ENB, IXC, VDE</div>' +
+        '<div id="ps2" class="pstep">&#128187; Checking Technology &mdash; SHOP, NVDA, TSLA</div>' +
+        '<div id="ps3" class="pstep">&#127759; Monitoring Emerging Markets &mdash; VEE, EWZS, ARGT</div>' +
+        '<div id="ps4" class="pstep">&#9762;&#65039; Watching Nuclear &amp; Gold &mdash; NLR, ZGLD</div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--text-dim)" id="loading-sub">Searching live markets for news relevant to your holdings...</div>' +
+    '</div>';
+
+  // Animate steps lighting up one by one
+  var delays = [200, 2800, 5400, 8000];
+  delays.forEach(function(delay, i){
+    setTimeout(function(){
+      var el = document.getElementById('ps' + (i+1));
+      if(el) el.className = 'pstep pstep-active';
+    }, delay);
   });
-  checkTotal();
+
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{"type": "web_search_20250305", "name": "web_search"}],
+        system: 'You are a financial news curator for a Wealthsimple investor. Their portfolio has significant concentration in: Energy (31.2% -- ENB, IXC, VDE), Technology (14.9% -- MSFT, NVDA, SHOP, TSLA), Financials (12.6% -- BRK.B, NU, ZDV, ZEB), Emerging Markets (7% -- ARGT, EWZS, VEE), Nuclear/Uranium (1.3% -- NLR), Gold (4.4% -- ZGLD). Search for the 4 most important recent news stories relevant to these specific holdings. Return ONLY a JSON array with no markdown or backticks: [{"headline":"...","source":"...","relevance":"One sentence on why this matters for their specific holdings","tickers":["ENB","VDE"],"sentiment":"bullish|bearish|neutral","tickerHeat":{"ENB":"hot","VDE":"warm"}}]',
+        messages: [{role: 'user', content: 'Find the 4 most important news stories right now for this investor portfolio. Focus on their concentrated positions.'}]
+      })
+    });
+
+    var data = await response.json();
+    var textBlocks = data.content.filter(function(b){ return b.type === 'text'; });
+    var rawText = textBlocks.map(function(b){ return b.text; }).join('');
+    var clean = rawText.replace(/```json|```/g, '').trim();
+
+    var news;
+    try {
+      var match = clean.match(/\[[\s\S]*\]/);
+      news = JSON.parse(match ? match[0] : clean);
+    } catch(e) {
+      throw new Error('Parse error');
+    }
+
+    renderNews(news);
+    buildWatchdog();
+    newsLoaded = true;
+  } catch(err) {
+    container.innerHTML =
+      '<div class="news-loading">' +
+        '<div style="font-size:24px">&#9888;&#65039;</div>' +
+        '<div class="news-loading-txt" style="color:var(--text-muted)">Could not load live news.<br>' +
+          '<span style="font-size:11px;color:var(--text-dim)">Check your connection and try refreshing.</span>' +
+        '</div>' +
+        '<button class="btn-p" style="margin-top:8px" onclick="loadNews()">Try again</button>' +
+      '</div>';
+    buildWatchdog();
+  }
+  btn.classList.remove('loading');
 }
-function onRange(id,v){tgt[id]=+v;document.getElementById('tl-'+id).textContent=v+'%';checkTotal();}
-function checkTotal(){
-  const sum=SECTORS.filter(s=>sel.has(s.id)).reduce((a,s)=>a+(tgt[s.id]||0),0);
-  const lbl=document.getElementById('total-lbl'),st=document.getElementById('total-status'),row=document.getElementById('total-row'),btn=document.getElementById('btn-s2');
-  lbl.textContent='Total: '+sum.toFixed(0)+'%';
-  const d=sum-100;
-  if(Math.abs(d)<=3){st.textContent='✓ Balanced';st.style.color='var(--pos)';row.className='total-row ok';btn.disabled=false;}
-  else if(d>3){st.textContent='↑ '+d.toFixed(0)+'% over';st.style.color='var(--neg)';row.className='total-row over';btn.disabled=true;}
-  else{st.textContent=Math.abs(d).toFixed(0)+'% unallocated';st.style.color='var(--amber)';row.className='total-row under';btn.disabled=true;}
-}
-function buildResult(){
-  const mo=parseInt((document.getElementById('dca-mo').value||'500').replace(/\D/g,''))||500;
-  const rows=SECTORS.filter(s=>sel.has(s.id)).map(s=>({...s,target:tgt[s.id]||s.cur,gap:(tgt[s.id]||s.cur)-s.cur})).sort((a,b)=>b.gap-a.gap);
-  const under=rows.filter(r=>r.gap>0.5),tg=under.reduce((a,r)=>a+r.gap,0);
-  let html=`<div class="res-hd"><div>Sector</div><div style="text-align:right">Gap</div><div style="text-align:right">Monthly DCA</div><div style="text-align:right">% of DCA</div></div>`;
-  rows.forEach(r=>{
-    const isU=r.gap>0.5,isO=r.gap<-0.5,alloc=isU&&tg>0?Math.round((r.gap/tg)*mo):0,pct=mo>0?Math.round((alloc/mo)*100):0;
-    html+=`<div class="res-row"><div><div class="res-sec" style="border-left:3px solid ${r.color};padding-left:7px">${r.name}</div><div class="res-rep">${r.rep}</div></div><div class="res-gap ${isU?'under':isO?'over':'flat'}" style="text-align:right">${isU?'+'+r.gap.toFixed(0)+'% under':isO?r.gap.toFixed(0)+'% over':'On target'}</div><div class="res-amt ${alloc>0?'invest':'pause'}" style="text-align:right">${alloc>0?'+$'+alloc+'/mo':'Pause'}</div><div class="res-pct">${alloc>0?pct+'%':'—'}</div></div>`;
+
+function renderNews(articles){
+  var container = document.getElementById('news-container');
+  if(!articles || articles.length === 0){
+    container.innerHTML = '<div class="news-loading"><div style="font-size:24px">&#128269;</div><div class="news-loading-txt">No significant news found for your holdings right now.</div></div>';
+    return;
+  }
+  var html = '<div class="news-grid">';
+  articles.forEach(function(a){
+    var sentClass = a.sentiment === 'bullish' ? 'sent-bull' : a.sentiment === 'bearish' ? 'sent-bear' : 'sent-neut';
+    var sentIcon  = a.sentiment === 'bullish' ? '&#8593;' : a.sentiment === 'bearish' ? '&#8595;' : '&#8594;';
+    var tickerHtml = (a.tickers||[]).map(function(t){
+      var heat = a.tickerHeat && a.tickerHeat[t] ? a.tickerHeat[t] : 'ok';
+      return '<span class="news-ticker ' + heat + '">' + t + '</span>';
+    }).join('');
+    html += '<div class="news-card">' +
+      '<div class="news-top">' +
+        '<div>' +
+          '<div class="news-headline">' + a.headline + '</div>' +
+          '<div class="news-source">' + (a.source || 'News') + '</div>' +
+        '</div>' +
+        '<span class="news-sentiment ' + sentClass + '">' + sentIcon + ' ' + a.sentiment + '</span>' +
+      '</div>' +
+      '<div class="news-relevance">' + a.relevance + '</div>' +
+      '<div class="news-tickers">' + tickerHtml + '</div>' +
+    '</div>';
   });
-  document.getElementById('result-wrap').innerHTML=html;
-  const dolGap=(under.length>0?under.reduce((a,r)=>a+r.gap,0)/under.length:0)/100*22631,months=mo>0&&dolGap>0?Math.ceil(dolGap/mo):0;
-  document.getElementById('months-est').innerHTML=months>0?`<div class="months-bar">~${months} months to reach your targets at $${mo.toLocaleString()}/mo — no sells required</div>`:'';
+  html += '</div>';
+  container.innerHTML = html;
 }
-function goStep(n){
-  [1,2,3].forEach(i=>{
-    document.getElementById('ds'+i).style.display=i===n?'block':'none';
-    const sn=document.getElementById('sn'+i);
-    sn.className='snode'+(i===n?' active':i<n?' done':'');
+// TABS
+function showTab(id,el){
+  ['exposure','holdings','dca','pulse'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===id?'block':'none';
   });
-  document.getElementById('sl1').className='sline'+(n>1?' done':'');
-  document.getElementById('sl2').className='sline'+(n>2?' done':'');
-  if(n===2)buildSliders();
-  if(n===3)buildResult();
-}
-buildChips();
-
-// CHAT
-const STEPS={
-  1:{
-    res:{
-      'I believed in pipeline demand & energy transition':{t:`That makes sense — pipeline infrastructure has been a strong thesis, and the returns back it up: ENB +25%, VDE +18%, IXC +16%.<br><br>Here's something worth reflecting on: <strong>when you look at that thesis today, does it feel like you're still early — or more like you've already captured most of the move?</strong>`},
-      'Honestly it just grew — I kept buying on dips':{t:`Honestly, that's how a lot of concentrated positions happen — and the discipline of buying dips is real.<br><br>But here's an interesting question: <strong>if energy weren't already 31% of your portfolio, would you choose to put 31% there today?</strong>`},
-      'Inflation protection & dividend income':{t:`Smart — ENB and VDE both throw off solid dividends, and energy historically holds up during inflationary periods.<br><br>One thing to explore: <strong>is dividend income still your main goal for this TFSA, or has your thinking shifted toward more growth over time?</strong>`},
-    },
-    chips:[
-      {l:"Feels like I've captured most of the move",i:'📉',k:'captured'},
-      {l:"Still early — energy has more runway",i:'🛢️',k:'runway'},
-      {l:"Not sure, that's why I'm here",i:'🤔',k:'unsure'},
-    ],next:2
-  },
-  2:{
-    res:{
-      captured:{t:`That's a healthy instinct — recognizing when a thesis has played out. You've got real gains to protect here.<br><br>Different question: <strong>when you think about this money, is there a point in your life where you'd want to start drawing on it?</strong>`},
-      runway:{t:`Fair — there are structural arguments for energy demand over the next few years, especially with LNG exports and AI data center power needs.<br><br>Worth thinking about: <strong>when you imagine looking back at your TFSA in 10 years, what do you want to have done with this period of growth?</strong>`},
-      unsure:{t:`That's the most honest answer, and honestly the most useful starting point.<br><br>Let me reframe it: <strong>if energy dropped 20% tomorrow and stayed flat for 2 years — would that feel like a buying opportunity, or would it make you wish you'd diversified?</strong>`},
-    },
-    chips:[
-      {l:"I'd want to start using it in 8–12 years",i:'🗓️',k:'longterm'},
-      {l:"5–7 years, medium-term goal",i:'📅',k:'midterm'},
-      {l:"It'd feel like a buying opportunity",i:'💪',k:'buydip'},
-      {l:"I'd wish I had diversified",i:'😬',k:'diversify'},
-    ],next:3
-  },
-  3:{
-    res:{
-      longterm:{t:`10+ years is a strong position — you have time to ride volatility and let compounding work.<br><br>Good to know. And currently: <strong>are you actively adding money to this TFSA?</strong>`},
-      midterm:{t:`5–7 years is meaningful — close enough that a rough few years in energy could affect your plans.<br><br>And currently: <strong>are you regularly adding to this account?</strong>`},
-      buydip:{t:`That conviction tells me you're not rattled easily. The question then isn't whether to panic-sell — it's whether your <em>new money</em> is being deployed as strategically as your existing positions.<br><br><strong>Are you still contributing regularly to this TFSA?</strong>`},
-      diversify:{t:`That reaction is worth naming — it tells me the concentration creates some anxiety even if you believe in energy. That's useful data.<br><br><strong>Are you currently adding money to this TFSA?</strong>`},
-    },
-    chips:[
-      {l:"Yes — I contribute monthly",i:'📆',k:'monthly'},
-      {l:"Occasionally, when I have extra cash",i:'💸',k:'occasional'},
-      {l:"Not actively right now",i:'⏸️',k:'inactive'},
-    ],next:4
-  },
-  4:{
-    res:{
-      monthly:{t:`Regular contributions are your biggest lever — they let you rebalance without selling anything.<br><br>Just so I can model this properly: <strong>roughly how much are you putting in each month?</strong>`},
-      occasional:{t:`Irregular contributions still work — you just need a clear rule for where each deposit goes.<br><br>To give you something concrete: <strong>what's a realistic monthly amount you could commit to?</strong>`},
-      inactive:{t:`Got it — the portfolio is growing on its own for now.<br><br><strong>Is there any chance you'd start contributing again in the next 6–12 months?</strong>`},
-    },
-    chips:[
-      {l:'Around $500/month',i:'💵',k:'500'},
-      {l:'Around $250/month',i:'💵',k:'250'},
-      {l:'Around $1,000/month',i:'💵',k:'1000'},
-      {l:'Around $200–300/month',i:'💵',k:'200'},
-    ],next:5
-  },
-  5:{final:true,amounts:{500:500,250:250,1000:1000,200:250}}
-};
-const FR={
-  'Review with a Wealthsimple advisor':`I'll send this full conversation to a Wealthsimple advisor for review. They'll see your portfolio, the analysis, and your goals — no need to repeat anything.<br><br><strong>Under IIROC/CSA suitability rules, this step protects both you and Wealthsimple.</strong> The AI diagnoses and educates — the execution decision stays human. That's by design.`,
-  'Show me the 12-month projection':`At your DCA amount redirected away from energy:<br><br><strong>Energy:</strong> 31.2% → ~19% ✓<br><strong>Broad Market:</strong> 24.7% → ~31% ↑<br><strong>Emerging Markets:</strong> 7.0% → ~9% ↑<br><strong>Nuclear:</strong> 1.3% → ~3% ↑<br><br>No sells. No capital gains events in TFSA. Just redirected new money.`,
-  'Am I overlapping in Canadian banks?':`Yes — ZEB and ZDV have significant overlap. Both hold Royal Bank, TD, Scotiabank, and BMO heavily. You're essentially doubling up on Canadian bank exposure at ~12% combined.<br><br>If the BoC cuts rates further, bank margins compress. Worth knowing before adding more to either.`,
-};
-
-function addUser(t){const c=document.getElementById('chat'),d=document.createElement('div');d.className='msg msg-user';d.innerHTML=`<div class="msg-lbl">You</div><div class="bbl-user">${t}</div>`;c.appendChild(d);c.scrollTop=9999;}
-function addAI(h){const c=document.getElementById('chat'),d=document.createElement('div');d.className='msg';d.innerHTML=`<div class="msg-lbl">AI</div><div class="bbl-ai">${h}</div>`;c.appendChild(d);c.scrollTop=9999;}
-function addTyping(){const c=document.getElementById('chat'),d=document.createElement('div');d.className='msg';d.innerHTML=`<div class="msg-lbl">AI</div><div class="bbl-ai"><div class="typing"><span></span><span></span><span></span></div></div>`;c.appendChild(d);c.scrollTop=9999;return d;}
-function addChips(chips,step){
-  const c=document.getElementById('chat'),w=document.createElement('div');w.className='qchips';w.id='cw-'+step;
-  chips.forEach(ch=>{const b=document.createElement('button');b.className='qchip';b.innerHTML=`<span class="qchip-ic">${ch.i}</span>${ch.l}`;b.onclick=()=>advance(step,ch.k,ch.l);w.appendChild(b);});
-  c.appendChild(w);c.scrollTop=9999;
-}
-function wait(ms){return new Promise(r=>setTimeout(r,ms));}
-
-async function advance(step,key,label){
-  const cw=document.getElementById('cw-'+step);if(cw)cw.remove();
-  addUser(label);
-  const st=STEPS[step];
-  if(st.final){showPlan(st.amounts[key]||500);return;}
-  const t=addTyping();await wait(900);t.remove();
-  const resp=st.res[key]||st.res[Object.keys(st.res)[0]];
-  addAI(resp.t);
-  await wait(150);
-  addChips(st.chips,st.next);
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  if(id==='pulse' && !newsLoaded) loadNews();
 }
 
-async function showPlan(mo){
-  const t=addTyping();await wait(1000);t.remove();
-  const v1=Math.round(mo*.35),v2=Math.round(mo*.20),v3=Math.round(mo*.15),v4=Math.round(mo*.15);
-  addAI(`Here's what I'm hearing: you've built a strong energy position intentionally, you believe there's still some runway — but you're ready to start diversifying your <em>new money</em> rather than selling what's working.<br><br><strong>No sells. No tax events. Just redirect contributions.</strong><br><br>At <strong>$${mo.toLocaleString()}/month</strong>, this brings energy from 31% → ~19% over 12 months:
-<div class="rb-prev">
-  <div class="rb-row"><div><div class="rb-t">VEQT ↑</div><div class="rb-a">Broad market — your foundation</div></div><div class="rb-v buy">+$${v1}/mo</div></div>
-  <div class="rb-row"><div><div class="rb-t">ZDV ↑</div><div class="rb-a">Dividends — keeps income thesis alive</div></div><div class="rb-v buy">+$${v2}/mo</div></div>
-  <div class="rb-row"><div><div class="rb-t">NLR ↑</div><div class="rb-a">Nuclear — energy exposure, diversified</div></div><div class="rb-v buy">+$${v3}/mo</div></div>
-  <div class="rb-row"><div><div class="rb-t">VEE ↑</div><div class="rb-a">Emerging markets — underweight</div></div><div class="rb-v buy">+$${v4}/mo</div></div>
-  <div class="rb-row"><div><div class="rb-t">VDE / IXC / ENB</div><div class="rb-a">Pause new contributions</div></div><div class="rb-v hold">$0/mo</div></div>
-</div>
-<div class="hbox-sm"><span>⚖️</span><div><strong>One last step.</strong> Under IIROC/CSA, a personalized plan needs advisor confirmation. Tap below to review with a Wealthsimple advisor — they'll have this full conversation as context.</div></div>`);
-  await wait(150);
-  const c=document.getElementById('chat'),w=document.createElement('div');w.className='qchips';w.id='cw-99';
-  [{i:'⚖️',l:'Review with a Wealthsimple advisor'},{i:'📈',l:'Show me the 12-month projection'},{i:'🏦',l:'Am I overlapping in Canadian banks?'}].forEach(ch=>{
-    const b=document.createElement('button');b.className='qchip';b.innerHTML=`<span class="qchip-ic">${ch.i}</span>${ch.l}`;
-    b.onclick=()=>{document.getElementById('cw-99')?.remove();handleFree(ch.l);};
-    w.appendChild(b);
-  });
-  c.appendChild(w);c.scrollTop=9999;
-}
-
-async function handleFree(txt){
-  addUser(txt);const t=addTyping();await wait(900);t.remove();
-  addAI(FR[txt]||`Based on your portfolio, your 31.2% energy concentration is the most important factor to address first. Want me to model a specific scenario?`);
-}
-async function advisorFlow(){await handleFree('Review with a Wealthsimple advisor');}
-function kd(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
-async function send(){const el=document.getElementById('txt'),txt=el.value.trim();if(!txt)return;el.value='';await handleFree(txt);}
-
-// Init chat
-(async()=>{
-  await wait(400);
-  addAI(`Hey Cassio — I've looked across your 24 positions. Overall returns are strong (+28.97%), but one pattern stands out:<br><br>
-<span class="itag itag-r">⚡ 31.2% Energy</span>
-<span class="itag itag-a">🏦 Financials overlap</span>
-<span class="itag itag-g">✓ Strong returns</span>
-<br><br>ENB, IXC, and VDE together make up nearly a third of your TFSA. That's not necessarily wrong — but it's worth understanding if it's intentional.<br><br><strong>Do you remember why you built this energy position up?</strong>`);
-  await wait(150);
-  addChips([
-    {i:'🛢️',l:"I believed in pipeline demand & energy transition",k:"I believed in pipeline demand & energy transition"},
-    {i:'📉',l:"Honestly it just grew — I kept buying on dips",k:"Honestly it just grew — I kept buying on dips"},
-    {i:'💰',l:"Inflation protection & dividend income",k:"Inflation protection & dividend income"},
-  ],1);
-})();
 </script>
 </body>
 </html>
