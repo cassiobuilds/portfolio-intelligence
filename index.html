@@ -590,6 +590,251 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 </div><!-- /app -->
 
 <script>
+// ── DCA DATA ─────────────────────────────────────────────────────
+var SECTORS=[
+  {id:'energy',    name:'Energy',          cur:31.2,color:'#fc8181',tickers:['ENB','IXC','VDE'],        rep:'VDE'},
+  {id:'broad',     name:'Broad Market',    cur:24.7,color:'#a0aec0',tickers:['SPY','VEQT','XEQT'],      rep:'VEQT'},
+  {id:'tech',      name:'Technology',      cur:14.9,color:'#48bb78',tickers:['MSFT','NVDA','SHOP','TSLA'],rep:'SHOP'},
+  {id:'finance',   name:'Financials',      cur:12.6,color:'#63b3ed',tickers:['BRK.B','NU','ZDV','ZEB'], rep:'ZDV'},
+  {id:'em',        name:'Emerging Markets',cur:7.0, color:'#b794f4',tickers:['ARGT','EWZS','VEE'],       rep:'VEE'},
+  {id:'materials', name:'Materials',       cur:5.2, color:'#f6ad55',tickers:['CPER','STN','SUZ'],        rep:'CPER'},
+  {id:'gold',      name:'Gold',            cur:4.4, color:'#d4a017',tickers:['ZGLD'],                   rep:'ZGLD'},
+  {id:'nuclear',   name:'Nuclear/Uranium', cur:1.3, color:'#38b2ac',tickers:['NLR'],                    rep:'NLR'},
+];
+var sel=new Set(), tgt={};
+
+function buildChips(){
+  var g=document.getElementById('chips-grid'); g.innerHTML='';
+  SECTORS.forEach(function(s){
+    var d=document.createElement('div');
+    d.className='s-chip'; d.id='chip-'+s.id;
+    d.innerHTML='<div class="chip-cb" id="cb-'+s.id+'"></div><div class="chip-body"><div class="chip-name">'+s.name+'</div><div class="chip-now" style="color:'+s.color+'">'+s.cur+'% now</div><div class="chip-tix">'+s.tickers.join(' \u00b7 ')+'</div></div>';
+    d.onclick=function(){ toggleChip(s.id); };
+    g.appendChild(d);
+  });
+}
+
+function toggleChip(id){
+  var c=document.getElementById('chip-'+id), cb=document.getElementById('cb-'+id);
+  if(sel.has(id)){sel.delete(id);c.classList.remove('sel');cb.textContent='';}
+  else{sel.add(id);c.classList.add('sel');cb.textContent='\u2713';}
+  var n=sel.size;
+  document.getElementById('sel-count').textContent=n+' sector'+(n!==1?'s':'')+' selected';
+  document.getElementById('btn-s1').disabled=n<2;
+  var hint=document.getElementById('sel-hint');
+  var hicon=document.getElementById('sel-hint-icon');
+  var htext=document.getElementById('sel-hint-text');
+  if(n===0){
+    hint.style.background='var(--surface2)';hint.style.borderColor='var(--border)';hint.style.color='var(--text-muted)';
+    hicon.textContent='\ud83d\udc46';htext.textContent='Select your first sector above to get started';
+  } else if(n===1){
+    hint.style.background='var(--amber-lt)';hint.style.borderColor='rgba(217,119,6,.25)';hint.style.color='var(--amber)';
+    hicon.textContent='\u261d\ufe0f';htext.textContent='Good start \u2014 select at least one more sector to continue. You need somewhere to move your money to.';
+  } else {
+    hint.style.background='var(--ws-green-lt)';hint.style.borderColor='rgba(0,195,122,.25)';hint.style.color='var(--ws-green-dk)';
+    hicon.textContent="\u2713";htext.textContent=n+" sectors selected. Tap Set my targets to continue.";
+  }
+}
+
+function buildSliders(){
+  var w=document.getElementById('sliders-wrap');
+  w.innerHTML='<div style="padding:10px 14px;background:var(--ws-green-lt);border:1px solid rgba(0,195,122,.2);border-radius:8px;margin-bottom:16px;font-size:12px;color:var(--ws-green-dk);display:flex;gap:8px;align-items:flex-start"><span style="flex-shrink:0">\ud83d\udca1</span><span>Move overweight sectors <strong>left</strong> (reduce) and underweight ones <strong>right</strong> (grow). The <strong>now</strong> line shows your current allocation. Watch the total at the bottom \u2014 it must hit 100% to unlock the next step.</span></div>';
+  SECTORS.filter(function(s){return sel.has(s.id);}).forEach(function(s){
+    if(tgt[s.id]===undefined) tgt[s.id]=s.cur;
+    var p=tgt[s.id], ml=Math.min(s.cur,50)*2;
+    var r=document.createElement('div'); r.className='sl-row';
+    r.innerHTML='<div class="sl-hd"><span class="sl-name" style="border-left:3px solid '+s.color+';padding-left:8px">'+s.name+'</span><div class="sl-vals"><span class="sl-curr">'+s.cur+'% now</span><span class="sl-arr">\u2192</span><span class="sl-tgt" id="tl-'+s.id+'">'+p.toFixed(0)+'%</span></div></div><div class="track-w"><div class="now-line" style="left:'+ml+'%"></div><div class="now-lbl" style="left:'+ml+'%">now</div><input type="range" min="0" max="50" step="1" value="'+p.toFixed(0)+'" oninput="onRange(\''+s.id+'\',this.value)"></div><div class="sl-tix">'+s.tickers.join(' \u00b7 ')+'</div>';
+    w.appendChild(r);
+  });
+  checkTotal();
+}
+
+function onRange(id,v){ tgt[id]=+v; document.getElementById('tl-'+id).textContent=v+'%'; checkTotal(); }
+
+function checkTotal(){
+  var sum=SECTORS.filter(function(s){return sel.has(s.id);}).reduce(function(a,s){return a+(tgt[s.id]||0);},0);
+  var lbl=document.getElementById('total-lbl'), st=document.getElementById('total-status');
+  var row=document.getElementById('total-row'), btn=document.getElementById('btn-s2');
+  lbl.textContent='Total: '+sum.toFixed(0)+'%';
+  var d=sum-100;
+  if(Math.abs(d)<=3){st.textContent='\u2713 Balanced';st.style.color='var(--pos)';row.className='total-row ok';btn.disabled=false;}
+  else if(d>3){st.textContent='\u2191 '+d.toFixed(0)+'% over';st.style.color='var(--neg)';row.className='total-row over';btn.disabled=true;}
+  else{st.textContent=Math.abs(d).toFixed(0)+'% unallocated';st.style.color='var(--amber)';row.className='total-row under';btn.disabled=true;}
+}
+
+function buildResult(){
+  var mo=parseInt((document.getElementById('dca-mo').value||'500').replace(/\D/g,''))||500;
+  var rows=SECTORS.filter(function(s){return sel.has(s.id);}).map(function(s){return {id:s.id,name:s.name,color:s.color,rep:s.rep,cur:s.cur,target:tgt[s.id]||s.cur,gap:(tgt[s.id]||s.cur)-s.cur};}).sort(function(a,b){return b.gap-a.gap;});
+  var under=rows.filter(function(r){return r.gap>0.5;}), tg=under.reduce(function(a,r){return a+r.gap;},0);
+  var html='<div class="res-hd"><div>Sector</div><div style="text-align:right">Gap</div><div style="text-align:right">Monthly DCA</div><div style="text-align:right">% of DCA</div></div>';
+  rows.forEach(function(r){
+    var isU=r.gap>0.5, isO=r.gap<-0.5;
+    var alloc=isU&&tg>0?Math.round((r.gap/tg)*mo):0;
+    var pct=mo>0?Math.round((alloc/mo)*100):0;
+    html+='<div class="res-row"><div><div class="res-sec" style="border-left:3px solid '+r.color+';padding-left:7px">'+r.name+'</div><div class="res-rep">'+r.rep+'</div></div><div class="res-gap '+(isU?'under':isO?'over':'flat')+'" style="text-align:right">'+(isU?'+'+r.gap.toFixed(0)+'% under':isO?r.gap.toFixed(0)+'% over':'On target')+'</div><div class="res-amt '+(alloc>0?'invest':'pause')+'" style="text-align:right">'+(alloc>0?'+$'+alloc+'/mo':'Pause')+'</div><div class="res-pct">'+(alloc>0?pct+'%':'\u2014')+'</div></div>';
+  });
+  document.getElementById('result-wrap').innerHTML=html;
+  var dolGap=(under.length>0?under.reduce(function(a,r){return a+r.gap;},0)/under.length:0)/100*22631;
+  var months=mo>0&&dolGap>0?Math.ceil(dolGap/mo):0;
+  document.getElementById('months-est').innerHTML=months>0?'<div class="months-bar">~'+months+' months to reach your targets at $'+mo.toLocaleString()+'/mo \u2014 no sells required</div>':'';
+}
+
+function goStep(n){
+  [1,2,3].forEach(function(i){
+    document.getElementById('ds'+i).style.display=i===n?'block':'none';
+    var sn=document.getElementById('sn'+i);
+    sn.className='snode'+(i===n?' active':i<n?' done':'');
+  });
+  document.getElementById('sl1').className='sline'+(n>1?' done':'');
+  document.getElementById('sl2').className='sline'+(n>2?' done':'');
+  if(n===2) buildSliders();
+  if(n===3) buildResult();
+}
+buildChips();
+
+// ── CHAT ─────────────────────────────────────────────────────────
+var STEPS={
+  1:{
+    res:{
+      'I believed in pipeline demand & energy transition':{t:'That makes sense \u2014 pipeline infrastructure has been a strong thesis, and the returns back it up: ENB +25%, VDE +18%, IXC +16%.<br><br>Here\u2019s something worth reflecting on: <strong>when you look at that thesis today, does it feel like you\u2019re still early \u2014 or more like you\u2019ve already captured most of the move?</strong>'},
+      'Honestly it just grew \u2014 I kept buying on dips':{t:'Honestly, that\u2019s how a lot of concentrated positions happen \u2014 and the discipline of buying dips is real.<br><br>But here\u2019s an interesting question: <strong>if energy weren\u2019t already 31% of your portfolio, would you choose to put 31% there today?</strong>'},
+      'Inflation protection & dividend income':{t:'Smart \u2014 ENB and VDE both throw off solid dividends, and energy historically holds up during inflationary periods.<br><br>One thing to explore: <strong>is dividend income still your main goal for this TFSA, or has your thinking shifted toward more growth over time?</strong>'},
+    },
+    chips:[
+      {i:'\ud83d\udcc9',l:"Feels like I've captured most of the move",k:'captured'},
+      {i:'\ud83d\udee2\ufe0f',l:"Still early \u2014 energy has more runway",k:'runway'},
+      {i:'\ud83e\udd14',l:"Not sure, that's why I'm here",k:'unsure'},
+    ],next:2
+  },
+  2:{
+    res:{
+      captured:{t:'That\u2019s a healthy instinct \u2014 recognizing when a thesis has played out. You\u2019ve got real gains to protect here.<br><br>Different question: <strong>when you think about this money, is there a point in your life where you\u2019d want to start drawing on it?</strong>'},
+      runway:{t:'Fair \u2014 there are structural arguments for energy demand over the next few years, especially with LNG exports and AI data center power needs.<br><br>Worth thinking about: <strong>when you imagine looking back at your TFSA in 10 years, what do you want to have done with this period of growth?</strong>'},
+      unsure:{t:'That\u2019s the most honest answer, and honestly the most useful starting point.<br><br>Let me reframe it: <strong>if energy dropped 20% tomorrow and stayed flat for 2 years \u2014 would that feel like a buying opportunity, or would it make you wish you\u2019d diversified?</strong>'},
+    },
+    chips:[
+      {i:'\ud83d\udcc5',l:"I'd want to start using it in 8\u201312 years",k:'longterm'},
+      {i:'\ud83d\udcc5',l:"5\u20137 years, medium-term goal",k:'midterm'},
+      {i:'\ud83d\udcaa',l:"It'd feel like a buying opportunity",k:'buydip'},
+      {i:'\ud83d\ude2c',l:"I'd wish I had diversified",k:'diversify'},
+    ],next:3
+  },
+  3:{
+    res:{
+      longterm:{t:'10+ years is a strong position \u2014 you have time to ride volatility and let compounding work.<br><br>Good to know. And currently: <strong>are you actively adding money to this TFSA?</strong>'},
+      midterm:{t:'5\u20137 years is meaningful \u2014 close enough that a rough few years in energy could affect your plans.<br><br>And currently: <strong>are you regularly adding to this account?</strong>'},
+      buydip:{t:'That conviction tells me you\u2019re not rattled easily. The question then isn\u2019t whether to panic-sell \u2014 it\u2019s whether your <em>new money</em> is being deployed as strategically as your existing positions.<br><br><strong>Are you still contributing regularly to this TFSA?</strong>'},
+      diversify:{t:'That reaction is worth naming \u2014 it tells me the concentration creates some anxiety even if you believe in energy. That\u2019s useful data.<br><br><strong>Are you currently adding money to this TFSA?</strong>'},
+    },
+    chips:[
+      {i:'\ud83d\udcc6',l:"Yes \u2014 I contribute monthly",k:'monthly'},
+      {i:'\ud83d\udcb8',l:"Occasionally, when I have extra cash",k:'occasional'},
+      {i:'\u23f8\ufe0f',l:"Not actively right now",k:'inactive'},
+    ],next:4
+  },
+  4:{
+    res:{
+      monthly:{t:'Regular contributions are your biggest lever \u2014 they let you rebalance without selling anything.<br><br>Just so I can model this properly: <strong>roughly how much are you putting in each month?</strong>'},
+      occasional:{t:'Irregular contributions still work \u2014 you just need a clear rule for where each deposit goes.<br><br>To give you something concrete: <strong>what\u2019s a realistic monthly amount you could commit to?</strong>'},
+      inactive:{t:'Got it \u2014 the portfolio is growing on its own for now.<br><br><strong>Is there any chance you\u2019d start contributing again in the next 6\u201312 months?</strong>'},
+    },
+    chips:[
+      {i:'\ud83d\udcb5',l:'Around $500/month',k:'500'},
+      {i:'\ud83d\udcb5',l:'Around $250/month',k:'250'},
+      {i:'\ud83d\udcb5',l:'Around $1,000/month',k:'1000'},
+      {i:'\ud83d\udcb5',l:'Around $200\u2013300/month',k:'200'},
+    ],next:5
+  },
+  5:{final:true,amounts:{500:500,250:250,1000:1000,200:250}}
+};
+
+var FR={
+  'Review with a Wealthsimple advisor':'I\'ll send this full conversation to a Wealthsimple advisor for review. They\'ll see your portfolio, the analysis, and your goals \u2014 no need to repeat anything.<br><br><strong>Under IIROC/CSA suitability rules, this step protects both you and Wealthsimple.</strong> The AI diagnoses and educates \u2014 the execution decision stays human. That\u2019s by design.',
+  'Show me the 12-month projection':'At your DCA amount redirected away from energy:<br><br><strong>Energy:</strong> 31.2% \u2192 ~19% \u2713<br><strong>Broad Market:</strong> 24.7% \u2192 ~31% \u2191<br><strong>Emerging Markets:</strong> 7.0% \u2192 ~9% \u2191<br><strong>Nuclear:</strong> 1.3% \u2192 ~3% \u2191<br><br>No sells. No capital gains events in TFSA. Just redirected new money.',
+  'Am I overlapping in Canadian banks?':'Yes \u2014 ZEB and ZDV have significant overlap. Both hold Royal Bank, TD, Scotiabank, and BMO heavily. You\u2019re essentially doubling up on Canadian bank exposure at ~12% combined.<br><br>If the BoC cuts rates further, bank margins compress. Worth knowing before adding more to either.',
+};
+
+function addUser(t){
+  var c=document.getElementById('chat'), d=document.createElement('div');
+  d.className='msg msg-user';
+  d.innerHTML='<div class="msg-lbl">You</div><div class="bbl-user">'+t+'</div>';
+  c.appendChild(d); c.scrollTop=9999;
+}
+function addAI(h){
+  var c=document.getElementById('chat'), d=document.createElement('div');
+  d.className='msg';
+  d.innerHTML='<div class="msg-lbl">AI</div><div class="bbl-ai">'+h+'</div>';
+  c.appendChild(d); c.scrollTop=9999;
+}
+function addTyping(){
+  var c=document.getElementById('chat'), d=document.createElement('div');
+  d.className='msg';
+  d.innerHTML='<div class="msg-lbl">AI</div><div class="bbl-ai"><div class="typing"><span></span><span></span><span></span></div></div>';
+  c.appendChild(d); c.scrollTop=9999; return d;
+}
+function addChips(chips,step){
+  var c=document.getElementById('chat'), w=document.createElement('div');
+  w.className='qchips'; w.id='cw-'+step;
+  chips.forEach(function(ch){
+    var b=document.createElement('button'); b.className='qchip';
+    b.innerHTML='<span class="qchip-ic">'+ch.i+'</span>'+ch.l;
+    b.onclick=(function(step,k,l){return function(){advance(step,k,l);};})(step,ch.k,ch.l);
+    w.appendChild(b);
+  });
+  c.appendChild(w); c.scrollTop=9999;
+}
+function wait(ms){ return new Promise(function(r){setTimeout(r,ms);}); }
+
+async function advance(step,key,label){
+  var cw=document.getElementById('cw-'+step); if(cw) cw.remove();
+  addUser(label);
+  var st=STEPS[step];
+  if(st.final){ showPlan(st.amounts[key]||500); return; }
+  var t=addTyping(); await wait(900); t.remove();
+  var resp=st.res[key]||st.res[Object.keys(st.res)[0]];
+  addAI(resp.t);
+  await wait(150);
+  addChips(st.chips,st.next);
+}
+
+async function showPlan(mo){
+  var t=addTyping(); await wait(1000); t.remove();
+  var v1=Math.round(mo*.35),v2=Math.round(mo*.20),v3=Math.round(mo*.15),v4=Math.round(mo*.15);
+  addAI('Here\u2019s what I\u2019m hearing: you\u2019ve built a strong energy position intentionally, you believe there\u2019s still some runway \u2014 but you\u2019re ready to start diversifying your <em>new money</em> rather than selling what\u2019s working.<br><br><strong>No sells. No tax events. Just redirect contributions.</strong><br><br>At <strong>$'+mo.toLocaleString()+'/month</strong>, this brings energy from 31% \u2192 ~19% over 12 months:'
+    +'<div class="rb-prev">'
+    +'<div class="rb-row"><div><div class="rb-t">VEQT \u2191</div><div class="rb-a">Broad market \u2014 your foundation</div></div><div class="rb-v buy">+$'+v1+'/mo</div></div>'
+    +'<div class="rb-row"><div><div class="rb-t">ZDV \u2191</div><div class="rb-a">Dividends \u2014 keeps income thesis alive</div></div><div class="rb-v buy">+$'+v2+'/mo</div></div>'
+    +'<div class="rb-row"><div><div class="rb-t">NLR \u2191</div><div class="rb-a">Nuclear \u2014 energy exposure, diversified</div></div><div class="rb-v buy">+$'+v3+'/mo</div></div>'
+    +'<div class="rb-row"><div><div class="rb-t">VEE \u2191</div><div class="rb-a">Emerging markets \u2014 underweight</div></div><div class="rb-v buy">+$'+v4+'/mo</div></div>'
+    +'<div class="rb-row"><div><div class="rb-t">VDE / IXC / ENB</div><div class="rb-a">Pause new contributions</div></div><div class="rb-v hold">$0/mo</div></div>'
+    +'</div>'
+    +'<div class="hbox-sm"><span>\u2696\ufe0f</span><div><strong>One last step.</strong> Under IIROC/CSA, a personalized plan needs advisor confirmation. Tap below to review with a Wealthsimple advisor.</div></div>');
+  await wait(150);
+  var c=document.getElementById('chat'), w=document.createElement('div');
+  w.className='qchips'; w.id='cw-99';
+  [{i:'\u2696\ufe0f',l:'Review with a Wealthsimple advisor'},{i:'\ud83d\udcc8',l:'Show me the 12-month projection'},{i:'\ud83c\udfe6',l:'Am I overlapping in Canadian banks?'}].forEach(function(ch){
+    var b=document.createElement('button'); b.className='qchip';
+    b.innerHTML='<span class="qchip-ic">'+ch.i+'</span>'+ch.l;
+    b.onclick=function(){ var cw99=document.getElementById('cw-99'); if(cw99) cw99.remove(); handleFree(ch.l); };
+    w.appendChild(b);
+  });
+  c.appendChild(w); c.scrollTop=9999;
+}
+
+async function handleFree(txt){
+  addUser(txt);
+  var t=addTyping(); await wait(900); t.remove();
+  addAI(FR[txt]||'Based on your portfolio, your 31.2% energy concentration is the most important factor to address first. Want me to model a specific scenario?');
+}
+async function advisorFlow(){ await handleFree('Review with a Wealthsimple advisor'); }
+function kd(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} }
+async function send(){
+  var el=document.getElementById('txt'), txt=el.value.trim();
+  if(!txt) return; el.value='';
+  await handleFree(txt);
+}
+
+
 (async()=>{
   await wait(400);
   const greeting = "Hey Cassio \u2014 I've looked across your 24 positions. Overall returns are strong (+28.97%), but one pattern stands out:<br><br>"
