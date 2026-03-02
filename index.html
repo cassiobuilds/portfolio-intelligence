@@ -653,7 +653,7 @@ function toggleWatch(cb, name){
   // Visual feedback only in prototype
 }
 
-async function loadNews(){
+function loadNews(){
   newsLoaded = false;
   var container = document.getElementById('news-container');
   var btn = document.getElementById('refresh-btn');
@@ -670,11 +670,11 @@ async function loadNews(){
         '<div id="ps3" class="pstep">&#127759; Monitoring Emerging Markets &mdash; VEE, EWZS, ARGT</div>' +
         '<div id="ps4" class="pstep">&#9762;&#65039; Watching Nuclear &amp; Gold &mdash; NLR, ZGLD</div>' +
       '</div>' +
-      '<div style="font-size:11px;color:var(--text-dim)" id="loading-sub">Searching live markets for news relevant to your holdings...</div>' +
+      '<div style="font-size:11px;color:var(--text-dim)">Searching live markets for news relevant to your holdings...</div>' +
     '</div>';
 
-  // Animate steps lighting up one by one
-  var delays = [200, 2800, 5400, 8000];
+  // Light up steps sequentially over ~5s
+  var delays = [300, 1500, 3000, 4500];
   delays.forEach(function(delay, i){
     setTimeout(function(){
       var el = document.getElementById('ps' + (i+1));
@@ -682,47 +682,49 @@ async function loadNews(){
     }, delay);
   });
 
-  try {
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{"type": "web_search_20250305", "name": "web_search"}],
-        system: 'You are a financial news curator for a Wealthsimple investor. Their portfolio has significant concentration in: Energy (31.2% -- ENB, IXC, VDE), Technology (14.9% -- MSFT, NVDA, SHOP, TSLA), Financials (12.6% -- BRK.B, NU, ZDV, ZEB), Emerging Markets (7% -- ARGT, EWZS, VEE), Nuclear/Uranium (1.3% -- NLR), Gold (4.4% -- ZGLD). Search for the 4 most important recent news stories relevant to these specific holdings. Return ONLY a JSON array with no markdown or backticks: [{"headline":"...","source":"...","relevance":"One sentence on why this matters for their specific holdings","tickers":["ENB","VDE"],"sentiment":"bullish|bearish|neutral","tickerHeat":{"ENB":"hot","VDE":"warm"}}]',
-        messages: [{role: 'user', content: 'Find the 4 most important news stories right now for this investor portfolio. Focus on their concentrated positions.'}]
-      })
-    });
-
-    var data = await response.json();
-    var textBlocks = data.content.filter(function(b){ return b.type === 'text'; });
-    var rawText = textBlocks.map(function(b){ return b.text; }).join('');
-    var clean = rawText.replace(/```json|```/g, '').trim();
-
-    var news;
-    try {
-      var match = clean.match(/\[[\s\S]*\]/);
-      news = JSON.parse(match ? match[0] : clean);
-    } catch(e) {
-      throw new Error('Parse error');
+  // Simulated news data - curated for portfolio
+  var SIMULATED_NEWS = [
+    {
+      headline: "OPEC+ holds output cuts as energy demand outlook improves heading into Q2",
+      source: "Reuters · 2h ago",
+      relevance: "Directly supports your 31.2% energy position — sustained cuts keep WTI above $80, benefiting VDE and IXC's underlying holdings.",
+      tickers: ["VDE","IXC","ENB"],
+      sentiment: "bullish",
+      tickerHeat: {"VDE":"hot","IXC":"hot","ENB":"warm"}
+    },
+    {
+      headline: "Shopify beats Q4 revenue estimates, raises full-year guidance on merchant growth",
+      source: "Bloomberg · 4h ago",
+      relevance: "SHOP is your largest single tech holding at 5% weight. Strong guidance suggests the growth thesis is intact despite macro headwinds.",
+      tickers: ["SHOP","MSFT","NVDA"],
+      sentiment: "bullish",
+      tickerHeat: {"SHOP":"hot","MSFT":"ok","NVDA":"ok"}
+    },
+    {
+      headline: "Uranium spot price breaks $100/lb as AI data centre power demand accelerates nuclear buildout",
+      source: "Financial Times · 6h ago",
+      relevance: "NLR is your highest-conviction underweight. This headline validates the nuclear thesis — consider whether 1.3% weight still reflects your conviction.",
+      tickers: ["NLR"],
+      sentiment: "bullish",
+      tickerHeat: {"NLR":"hot"}
+    },
+    {
+      headline: "Brazil central bank signals rate pause as inflation cools, real strengthens against USD",
+      source: "WSJ · 8h ago",
+      relevance: "EWZS and SUZ are both BRL-denominated. A stronger real boosts CAD-equivalent returns on your Brazil small-cap exposure.",
+      tickers: ["EWZS","VEE"],
+      sentiment: "bullish",
+      tickerHeat: {"EWZS":"warm","VEE":"ok"}
     }
+  ];
 
-    renderNews(news);
+  // Render after 6s — gives animation time to complete + a beat of pause
+  setTimeout(function(){
+    renderNews(SIMULATED_NEWS);
     buildWatchdog();
     newsLoaded = true;
-  } catch(err) {
-    container.innerHTML =
-      '<div class="news-loading">' +
-        '<div style="font-size:24px">&#9888;&#65039;</div>' +
-        '<div class="news-loading-txt" style="color:var(--text-muted)">Could not load live news.<br>' +
-          '<span style="font-size:11px;color:var(--text-dim)">Check your connection and try refreshing.</span>' +
-        '</div>' +
-        '<button class="btn-p" style="margin-top:8px" onclick="loadNews()">Try again</button>' +
-      '</div>';
-    buildWatchdog();
-  }
-  btn.classList.remove('loading');
+    btn.classList.remove('loading');
+  }, 6000);
 }
 
 function renderNews(articles){
